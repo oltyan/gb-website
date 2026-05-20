@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}The Grog Blossoms{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@400;500&family=Coming+Soon&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#131313",
+            "surface-container": "#1f1f1f",
+            "surface-container-low": "#1b1b1b",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-container-high": "#2a2a2a",
+            "background": "#131313",
+            "on-background": "#e2e2e2",
+            "on-surface": "#e2e2e2",
+            "on-surface-variant": "#c4c7c8",
+            "primary": "#ffffff",
+            "outline": "#8e9192",
+            "accent-red": "#A62116",
+            "accent-amber": "#C49A4D"
+          },
+          fontFamily: {
+            "headline": ["Bricolage Grotesque"],
+            "body": ["Geist"],
+            "mono": ["JetBrains Mono"],
+            "hand": ["Gaegu"],
+            "script": ["Coming Soon"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .grain-overlay {
+      background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 3px 3px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .noir-frame { border: 4px solid #fff; box-shadow: 8px 8px 0 0 #000; }
+    .sketch-border { border: 2px solid currentColor; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; }
+    .sketch-underline {
+      background-image: linear-gradient(120deg, #A62116 0%, #A62116 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 0.2em;
+      background-position: 0 88%;
+    }
+    .skew-1 { transform: rotate(-1deg); }
+    .skew-2 { transform: rotate(1.5deg); }
+  </style>
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="bg-background text-on-background font-body selection:bg-accent-red selection:text-white overflow-x-hidden">
+<div class="fixed inset-0 grain-overlay z-50"></div>
+
+{% block header %}
+<header class="flex justify-between items-center w-full px-6 py-4 bg-background border-b-4 border-primary sticky top-0 z-[60]">
+  <a href="{{ url_for('public.home') }}" class="flex items-center gap-4">
+    <div class="font-hand text-3xl font-bold tracking-tight text-primary uppercase">The Grog Blossoms</div>
+  </a>
+  <nav class="hidden md:flex gap-6 items-center">
+    <a href="{{ url_for('public.log_index') }}" class="text-on-surface-variant hover:text-accent-red font-mono text-xs uppercase">Ship's Log</a>
+    <a href="{{ url_for('public.manifest') }}" class="text-on-surface-variant hover:text-accent-amber font-mono text-xs uppercase">Manifest</a>
+    <a href="{{ url_for('public.booty') }}" class="text-on-surface-variant hover:text-accent-amber font-mono text-xs uppercase">Booty</a>
+    <a href="{{ url_for('public.crew') }}" class="text-on-surface-variant hover:text-accent-amber font-mono text-xs uppercase">Crew</a>
+    <a href="{{ url_for('public.crows_nest') }}" class="text-on-surface-variant hover:text-accent-amber font-mono text-xs uppercase">Crow's Nest</a>
+  </nav>
+</header>
+{% endblock %}
+
+<main class="relative pb-24 md:pb-12">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="w-full py-8 px-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-lowest border-t-2 border-dashed border-accent-amber">
+  <div class="font-hand text-lg text-accent-amber">© 2026 THE GROG BLOSSOMS. NO QUARTER GIVEN.</div>
+</footer>
+
+</body>
+</html>

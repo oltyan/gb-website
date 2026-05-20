@@ -17,8 +17,17 @@ def create_app(config_name: str | None = None) -> Flask:
     login_manager.init_app(app)
     oauth.init_app(app)
 
+    # Placeholder user_loader so Flask-Login's template context processor
+    # can resolve `current_user` on anonymous requests. Real auth lands later.
+    @login_manager.user_loader
+    def _load_user(user_id):  # pragma: no cover - placeholder
+        return None
+
     @app.get("/healthz")
     def healthz():
         return jsonify(status="ok")
+
+    from .blueprints.public import bp as public_bp
+    app.register_blueprint(public_bp)
 
     return app
