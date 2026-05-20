@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Admin — Grog Blossoms{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body { background:#131313; color:#e2e2e2; font-family: ui-sans-serif, system-ui; }</style>
+</head>
+<body class="min-h-screen">
+  <header class="border-b-2 border-white/20 px-6 py-4 flex justify-between items-center">
+    <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold tracking-tight">⚓ ADMIN — GROG BLOSSOMS</a>
+    <a href="{{ url_for('auth.logout') }}" class="text-sm uppercase tracking-widest border border-white/40 px-3 py-1 hover:bg-white hover:text-black">Logout</a>
+  </header>
+  <main class="px-6 py-8 max-w-6xl mx-auto">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -32,4 +32,19 @@ def create_app(config_name: str | None = None) -> Flask:
     from .blueprints.public import bp as public_bp
     app.register_blueprint(public_bp)
 
+    if app.config.get("OIDC_DISCOVERY_URL"):
+        oauth.register(
+            name="fa",
+            client_id=app.config["OIDC_CLIENT_ID"],
+            client_secret=app.config["OIDC_CLIENT_SECRET"],
+            server_metadata_url=app.config["OIDC_DISCOVERY_URL"],
+            client_kwargs={"scope": "openid email profile groups"},
+        )
+
+    from .blueprints.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+
+    from .blueprints.admin import bp as admin_bp
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+
     return app
