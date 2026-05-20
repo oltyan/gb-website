@@ -17,11 +17,13 @@ def create_app(config_name: str | None = None) -> Flask:
     login_manager.init_app(app)
     oauth.init_app(app)
 
-    # Placeholder user_loader so Flask-Login's template context processor
-    # can resolve `current_user` on anonymous requests. Real auth lands later.
+    from .models import User
+
     @login_manager.user_loader
-    def _load_user(user_id):  # pragma: no cover - placeholder
-        return None
+    def load_user(user_id: str):
+        return db.session.get(User, int(user_id))
+
+    login_manager.login_view = "auth.login"
 
     @app.get("/healthz")
     def healthz():
