@@ -52,3 +52,13 @@ def test_log_detail_404s_for_draft(client, app):
         db.session.commit()
     r = client.get("/log/draft")
     assert r.status_code == 404
+
+
+def test_manifest_lists_upcoming(client, app):
+    from app.models import TourDate
+    with app.app_context():
+        db.session.add(TourDate(event_name="Renfest", venue="V", city="C", state="CA",
+                                starts_at=datetime.utcnow().replace(year=2099), status="confirmed"))
+        db.session.commit()
+    r = client.get("/manifest")
+    assert r.status_code == 200 and b"Renfest" in r.data

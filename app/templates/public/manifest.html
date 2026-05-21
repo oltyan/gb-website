@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}The Ship's Manifest — Tour Dates{% endblock %}
+{% block content %}
+<section class="px-6 py-12 max-w-5xl mx-auto">
+  <div class="inline-block bg-accent-red text-white px-8 py-3 mb-8 -rotate-1 sketch-border">
+    <h1 class="font-hand text-5xl uppercase">The Ship's Manifest</h1>
+  </div>
+
+  <h2 class="font-hand text-3xl mt-12 mb-6 text-accent-amber">Upcoming Ports</h2>
+  <ul class="space-y-4">
+    {% for t in upcoming %}
+    <li class="border-2 border-white/20 p-6 grid grid-cols-1 md:grid-cols-[10rem_1fr_auto] gap-4 items-center sketch-border">
+      <div>
+        <div class="font-hand text-3xl text-accent-amber">{{ t.starts_at.strftime('%b %d') }}</div>
+        <div class="font-mono text-xs text-white/60 uppercase">{{ t.starts_at.strftime('%Y') }}</div>
+      </div>
+      <div>
+        <div class="font-hand text-2xl">{{ t.event_name }}</div>
+        <div class="text-on-surface-variant text-sm">{{ t.venue }} — {{ t.city }}, {{ t.state }}</div>
+        {% if t.notes %}<div class="mt-2 text-sm">{{ t.notes }}</div>{% endif %}
+      </div>
+      <div>
+        {% if t.ticket_url %}
+        <a class="px-4 py-2 bg-accent-red text-white font-hand uppercase block text-center" href="{{ t.ticket_url }}">Tickets</a>
+        {% else %}
+        <span class="font-mono text-xs text-white/40 uppercase">{{ t.status }}</span>
+        {% endif %}
+      </div>
+    </li>
+    {% else %}
+    <li class="text-white/40 py-8 text-center">No ports on the horizon.</li>
+    {% endfor %}
+  </ul>
+
+  {% if past %}
+  <h2 class="font-hand text-3xl mt-16 mb-6 text-white/60">Ports Visited</h2>
+  <ul class="space-y-2 text-sm text-on-surface-variant">
+    {% for t in past %}
+    <li class="flex gap-4 border-b border-white/10 py-2">
+      <span class="font-mono text-xs uppercase w-28 text-white/40">{{ t.starts_at.strftime('%Y-%m-%d') }}</span>
+      <span>{{ t.event_name }} — {{ t.venue }}, {{ t.city }} {{ t.state }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endblock %}
