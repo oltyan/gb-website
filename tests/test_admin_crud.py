@@ -62,3 +62,20 @@ def test_post_delete(client, app):
     assert response.status_code == 200
     with app.app_context():
         assert db.session.get(Post, pid) is None
+
+
+import pytest
+
+
+@pytest.mark.parametrize("prefix", ["crew", "tour_dates", "music", "merch", "press", "scuttlebutt"])
+def test_admin_list_route_renders(client, app, prefix):
+    _login_as_admin(client, app)
+    response = client.get(f"/admin/{prefix}/")
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("prefix", ["crew", "tour_dates", "music", "merch", "press", "scuttlebutt"])
+def test_admin_new_route_renders(client, app, prefix):
+    _login_as_admin(client, app)
+    response = client.get(f"/admin/{prefix}/new")
+    assert response.status_code == 200

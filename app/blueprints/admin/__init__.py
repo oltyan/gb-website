@@ -27,4 +27,4 @@ def _gate():
 
 __all__ = ["bp", "require_admin_group"]
 
-from . import posts  # noqa: E402,F401
+from . import posts, crew, tour_dates, music, merch, press, scuttlebutt  # noqa: E402,F401
