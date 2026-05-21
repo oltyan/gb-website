@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block title %}Media — Admin{% endblock %}
+{% block content %}
+<h1 class="text-3xl mb-6">Media</h1>
+
+<div class="border border-white/20 p-4 max-w-3xl mb-8">
+  <h2 class="text-sm uppercase tracking-widest mb-3 text-white/60">Register CDN URL</h2>
+  <p class="text-xs text-white/40 mb-3">Until the IAM uploader is provisioned, drop the file in the bucket via other means, then paste the public URL here.</p>
+  <form method="post" action="{{ url_for('admin.assets_register') }}" class="space-y-2">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="url" placeholder="https://design-assets.musicalmycology.org/grogblossoms/…" class="w-full bg-black/40 border border-white/20 px-3 py-2 font-mono text-sm">
+    <input name="caption" placeholder="Caption (optional)" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+    <button class="px-4 py-2 bg-white text-black uppercase tracking-widest text-sm">Register</button>
+  </form>
+</div>
+
+<table class="w-full text-sm">
+  <thead class="border-b border-white/20">
+    <tr><th class="py-2 px-3 text-left text-xs uppercase">Preview</th>
+        <th class="text-left text-xs uppercase">Key</th>
+        <th class="text-left text-xs uppercase">Uploaded</th></tr>
+  </thead>
+  <tbody>
+  {% for a in items %}
+    <tr class="border-b border-white/10">
+      <td class="py-2 px-3">
+        {% if a.content_type.startswith('image/') or a.url.endswith(('.jpg','.jpeg','.png','.webp','.gif')) %}
+          <img src="{{ a.url }}" alt="" class="w-16 h-16 object-cover">
+        {% else %}
+          <span class="text-white/40 text-xs">file</span>
+        {% endif %}
+      </td>
+      <td class="px-3 font-mono text-xs break-all">{{ a.key }}</td>
+      <td class="px-3 text-xs">{{ a.uploaded_at.strftime('%Y-%m-%d') }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="3" class="py-8 text-center text-white/40">No assets registered.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
