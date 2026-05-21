@@ -65,8 +65,12 @@ Should already exist if mm-sporekles is up.
 ```bash
 ssh mycelium
 sudo mkdir -p /opt/gb-website/{data,backups}
-sudo chown -R $USER:$USER /opt/gb-website
+sudo chown -R "$USER:$(id -gn)" /opt/gb-website
 ```
+
+(`$USER:$USER` won't work on macOS — Mac users don't have a per-user
+primary group; default is `staff`. `id -gn` resolves the right group
+on whichever OS this is run on.)
 
 That's it for on-host setup. The repo itself is checked out into the
 Jenkins workspace each build — there is no permanent `/opt/gb-website/repo`
