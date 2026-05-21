@@ -47,4 +47,12 @@ def create_app(config_name: str | None = None) -> Flask:
     from .blueprints.admin import bp as admin_bp
     app.register_blueprint(admin_bp, url_prefix="/admin")
 
+    @app.template_global()
+    def safe_url(endpoint, **values):
+        try:
+            from flask import url_for
+            return url_for(endpoint, **values)
+        except Exception:
+            return "#"
+
     return app

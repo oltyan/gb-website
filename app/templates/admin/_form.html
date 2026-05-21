@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ mode|title }} {{ label }} — Admin{% endblock %}
+{% block content %}
+<h1 class="text-3xl mb-6">{{ mode|title }} {{ label }}</h1>
+
+<form method="post" class="space-y-4 max-w-3xl">
+  {{ form.hidden_tag() }}
+  {% for field in form if field.name not in ('csrf_token',) %}
+  <div>
+    <label class="block text-xs uppercase tracking-widest text-white/60 mb-1">{{ field.label.text }}</label>
+    {{ field(class_="w-full bg-black/40 border border-white/20 px-3 py-2 text-white font-mono") }}
+    {% if field.errors %}
+      <ul class="text-red-400 text-xs mt-1">
+        {% for err in field.errors %}<li>{{ err }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <div class="flex gap-3">
+    <button class="px-6 py-2 bg-white text-black uppercase tracking-widest">Save</button>
+    <a href="{{ url_for('admin.' ~ prefix ~ '_list') }}" class="px-6 py-2 border border-white/40 uppercase tracking-widest">Cancel</a>
+  </div>
+</form>
+{% endblock %}

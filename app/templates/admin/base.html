@@ -6,12 +6,32 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>body { background:#131313; color:#e2e2e2; font-family: ui-sans-serif, system-ui; }</style>
 </head>
-<body class="min-h-screen">
-  <header class="border-b-2 border-white/20 px-6 py-4 flex justify-between items-center">
-    <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold tracking-tight">⚓ ADMIN — GROG BLOSSOMS</a>
-    <a href="{{ url_for('auth.logout') }}" class="text-sm uppercase tracking-widest border border-white/40 px-3 py-1 hover:bg-white hover:text-black">Logout</a>
-  </header>
-  <main class="px-6 py-8 max-w-6xl mx-auto">
+<body class="min-h-screen flex">
+  <aside class="w-56 border-r-2 border-white/20 p-4">
+    <a href="{{ url_for('admin.dashboard') }}" class="block mb-6 text-lg font-bold tracking-tight">⚓ ADMIN</a>
+    <nav class="space-y-1 text-sm">
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.posts_list') }}">Ship's Log</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.crew_list') }}">Crew</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.tour_dates_list') }}">Tour Dates</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.galleries_list') }}">Galleries</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.music_list') }}">Music</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.merch_list') }}">Merch</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.press_list') }}">Press Assets</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.inquiries_list') }}">Inquiries</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.scuttlebutt_list') }}">Scuttlebutt</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.assets_list') }}">Media</a>
+      <a class="block py-1 text-white/70 hover:text-white" href="{{ safe_url('admin.settings') }}">Settings</a>
+    </nav>
+    <div class="mt-12 pt-4 border-t border-white/10">
+      <a class="block text-xs uppercase tracking-widest text-white/40 hover:text-white" href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+  </aside>
+  <main class="flex-1 px-8 py-8">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, msg in messages %}
+      <div class="mb-4 px-3 py-2 border border-{% if category == 'success' %}green{% else %}red{% endif %}-400 text-{% if category == 'success' %}green{% else %}red{% endif %}-200">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
     {% block content %}{% endblock %}
   </main>
 </body>
