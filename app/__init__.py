@@ -55,4 +55,11 @@ def create_app(config_name: str | None = None) -> Flask:
         except Exception:
             return "#"
 
+    import markdown as md
+    @app.template_filter("markdown")
+    def _markdown_filter(text: str) -> str:
+        if not text:
+            return ""
+        return md.markdown(text, extensions=["fenced_code", "tables", "nl2br"])
+
     return app

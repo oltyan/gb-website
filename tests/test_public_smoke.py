@@ -32,3 +32,23 @@ def test_home_renders_with_seeded_data(client, app):
     assert "Test scuttle" in body
     assert "Raid at Port Royal" in body
     assert "12" in body  # ports_visited
+
+
+def test_log_index_and_detail(client, app):
+    with app.app_context():
+        db.session.add(Post(slug="entry", title="Entry", author_name="C",
+                            excerpt="ex", body_md="# Hi\n\npara",
+                            published_at=datetime.utcnow()))
+        db.session.commit()
+    r1 = client.get("/log")
+    assert r1.status_code == 200 and b"Entry" in r1.data
+    r2 = client.get("/log/entry")
+    assert r2.status_code == 200 and b"Hi" in r2.data
+
+
+def test_log_detail_404s_for_draft(client, app):
+    with app.app_context():
+        db.session.add(Post(slug="draft", title="X", author_name="C", excerpt="", body_md=""))
+        db.session.commit()
+    r = client.get("/log/draft")
+    assert r.status_code == 404

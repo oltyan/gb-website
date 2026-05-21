@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — Ship's Log{% endblock %}
+{% block content %}
+<article class="px-6 py-12 max-w-3xl mx-auto">
+  <span class="font-mono text-xs text-accent-red uppercase">{{ post.published_at.strftime('%b %d, %Y') }} — {{ post.author_name }}</span>
+  <h1 class="font-hand text-5xl my-4 sketch-underline inline-block">{{ post.title }}</h1>
+
+  {% if post.hero_image_url %}
+  <div class="noir-frame bg-surface p-2 my-8 -rotate-1 sketch-border border-white">
+    <img alt="" class="w-full grayscale" src="{{ post.hero_image_url }}">
+  </div>
+  {% endif %}
+
+  {% if post.blocks and post.blocks|length > 0 %}
+    {% from "_blocks/macros.html" import render_block %}
+    {% for block in post.blocks %}{{ render_block(block) }}{% endfor %}
+  {% else %}
+    <div class="prose prose-invert max-w-none font-body-lg">
+      {{ post.body_md | markdown | safe }}
+    </div>
+  {% endif %}
+</article>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Ship's Log — The Grog Blossoms{% endblock %}
+{% block content %}
+<section class="px-6 py-12 max-w-6xl mx-auto">
+  <div class="inline-block bg-accent-red text-white px-8 py-3 mb-8 -rotate-1 sketch-border">
+    <h1 class="font-hand text-5xl uppercase leading-tight">Ship's Log</h1>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {% for p in posts %}
+    <article class="group">
+      {% if p.hero_image_url %}
+      <div class="noir-frame bg-surface p-1 mb-4 sketch-border -rotate-1">
+        <img alt="" class="w-full h-48 object-cover grayscale" src="{{ p.hero_image_url }}">
+      </div>
+      {% endif %}
+      <span class="font-mono text-xs text-accent-red uppercase">{{ p.published_at.strftime('%b %d, %Y') }}</span>
+      <h2 class="font-hand text-2xl mt-2 mb-3 sketch-underline inline-block">
+        <a href="{{ url_for('public.log_detail', slug=p.slug) }}">{{ p.title }}</a>
+      </h2>
+      <p class="text-on-surface-variant text-sm line-clamp-3">{{ p.excerpt }}</p>
+    </article>
+    {% else %}
+    <div class="col-span-3 text-white/40 text-center py-12">The log is empty.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
