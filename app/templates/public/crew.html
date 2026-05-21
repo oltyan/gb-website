@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Rogue's Gallery — The Grog Blossoms{% endblock %}
+{% block content %}
+<section class="px-6 py-12 max-w-7xl mx-auto">
+  <div class="inline-block bg-accent-red text-white px-8 py-3 mb-6 -rotate-1 sketch-border">
+    <h1 class="font-hand text-5xl uppercase">Rogue's Gallery</h1>
+  </div>
+  <p class="font-hand text-2xl max-w-2xl text-on-surface-variant italic border-l-4 border-accent-red pl-6 py-2 mb-12">
+    "Wanted for piracy, revelry, and the occasional fine harmony. Approach with caution and a full flagon."
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+    {% for c in members %}
+    <div class="sketch-border p-8 {% if c.tilt == 'left' %}-rotate-1{% else %}rotate-1{% endif %} border-accent-{{ c.accent }} flex flex-col">
+      <div class="mb-6 border-b-2 border-dashed border-accent-red pb-3 flex justify-between items-end">
+        <span class="font-mono text-xs text-accent-amber uppercase tracking-widest">Entry No. {{ c.entry_no }}</span>
+      </div>
+      {% if c.portrait_url %}
+      <div class="noir-frame bg-surface-container-high mb-6 overflow-hidden sketch-border border-white aspect-[4/5]">
+        <img alt="{{ c.name }}" class="w-full h-full object-cover grayscale" src="{{ c.portrait_url }}">
+      </div>
+      {% endif %}
+      <h3 class="font-hand text-4xl text-primary mb-2 sketch-underline inline-block w-fit">{{ c.name }}</h3>
+      <p class="font-mono text-xs uppercase text-accent-amber mb-6">{{ c.role }}</p>
+      {% if c.quote %}
+      <div class="mt-auto pt-6 border-t border-dashed border-white/20">
+        <p class="font-hand text-xl italic text-on-surface-variant">"{{ c.quote }}"</p>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="col-span-3 text-white/40 text-center">No crew aboard yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

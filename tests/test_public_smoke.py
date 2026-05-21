@@ -62,3 +62,14 @@ def test_manifest_lists_upcoming(client, app):
         db.session.commit()
     r = client.get("/manifest")
     assert r.status_code == 200 and b"Renfest" in r.data
+
+
+def test_crew_page_renders(client, app):
+    from app.models import CrewMember
+    with app.app_context():
+        db.session.add(CrewMember(slug="siren", name="THE SIREN", role="Fiddle",
+                                  portrait_url="", quote="x", entry_no="002",
+                                  tilt="left", accent="white", sort_order=0))
+        db.session.commit()
+    r = client.get("/crew")
+    assert r.status_code == 200 and b"THE SIREN" in r.data
