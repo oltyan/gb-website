@@ -1,17 +1,15 @@
-from functools import wraps
+from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template
-from flask_login import login_required
+
+from app.models import Inquiry, Post, TourDate
+from app.extensions import db
 
 bp = Blueprint("admin", __name__)
 
 
-# Note: require_admin_group is imported in __init__.py to avoid circular import;
-# decorator is applied per-view to make intent explicit. The lazy import inside
-# the wrapper breaks the cycle at runtime: views.py loads first (so bp exists),
-# __init__.py then defines require_admin_group, and by the time any request hits
-# this view, the symbol is resolvable.
 def _require_group(view):
+    from functools import wraps
     @wraps(view)
     def wrapper(*args, **kwargs):
         from . import require_admin_group
@@ -22,4 +20,13 @@ def _require_group(view):
 @bp.get("/")
 @_require_group
 def dashboard():
-    return render_template("admin/dashboard.html")
+    recent_posts = Post.query.order_by(Post.created_at.desc()).limit(5).all()
+    upcoming = (TourDate.query
+                .filter(TourDate.status.in_(("confirmed", "tentative")))
+                .filter(TourDate.starts_at >= datetime.utcnow() - timedelta(days=1))
+                .order_by(TourDate.starts_at).limit(3).all())
+    new_inquiries = Inquiry.query.filter_by(status="new").count()
+    return render_template(
+        "admin/dashboard.html",
+        recent_posts=recent_posts, upcoming=upcoming, new_inquiries=new_inquiries,
+    )

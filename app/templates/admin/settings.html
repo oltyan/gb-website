@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% block title %}Settings — Admin{% endblock %}
+{% block content %}
+<h1 class="text-3xl mb-6">Site Settings</h1>
+<form method="post" class="space-y-4 max-w-3xl">
+  {{ form.hidden_tag() }}
+  {% for field in form if field.name not in ('csrf_token',) %}
+  <div>
+    <label class="block text-xs uppercase tracking-widest text-white/60 mb-1">{{ field.label.text }}</label>
+    {{ field(class_="w-full bg-black/40 border border-white/20 px-3 py-2 text-white font-mono") }}
+  </div>
+  {% endfor %}
+  <button class="px-6 py-2 bg-white text-black uppercase tracking-widest">Save</button>
+</form>
+{% endblock %}

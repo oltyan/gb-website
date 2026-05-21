@@ -1,5 +1,27 @@
 {% extends "admin/base.html" %}
+{% block title %}Dashboard — Admin{% endblock %}
 {% block content %}
-  <h1 class="text-3xl mb-6">Dashboard</h1>
-  <p class="text-on-surface-variant">Content modules will appear here as Phase 3 progresses.</p>
+<h1 class="text-3xl mb-8">Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="border border-white/20 p-4">
+    <div class="text-xs uppercase tracking-widest text-white/60 mb-2">New inquiries</div>
+    <div class="text-5xl font-bold">{{ new_inquiries }}</div>
+    <a href="{{ url_for('admin.inquiries_list') }}" class="text-xs uppercase mt-3 inline-block text-white/60 hover:text-white">View inbox →</a>
+  </div>
+  <div class="border border-white/20 p-4">
+    <div class="text-xs uppercase tracking-widest text-white/60 mb-2">Recent posts</div>
+    <ul class="text-sm space-y-1">
+      {% for p in recent_posts %}<li><a class="hover:underline" href="{{ url_for('admin.posts_edit', id=p.id) }}">{{ p.title }}</a></li>
+      {% else %}<li class="text-white/40">none yet</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="border border-white/20 p-4">
+    <div class="text-xs uppercase tracking-widest text-white/60 mb-2">Next tour dates</div>
+    <ul class="text-sm space-y-1">
+      {% for t in upcoming %}<li>{{ t.starts_at.strftime('%b %d') }} — {{ t.event_name }}</li>
+      {% else %}<li class="text-white/40">none scheduled</li>{% endfor %}
+    </ul>
+  </div>
+</div>
 {% endblock %}

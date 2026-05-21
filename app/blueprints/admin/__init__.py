@@ -27,4 +27,4 @@ def _gate():
 
 __all__ = ["bp", "require_admin_group"]
 
-from . import posts, crew, tour_dates, galleries, music, merch, press, inquiries, scuttlebutt, assets  # noqa: E402,F401
+from . import posts, crew, tour_dates, galleries, music, merch, press, inquiries, scuttlebutt, assets, settings as _settings  # noqa: E402,F401
