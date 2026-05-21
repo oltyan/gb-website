@@ -1,10 +1,19 @@
 from datetime import date, datetime
+
 from flask import Blueprint, abort, render_template, request
 
 from app.extensions import db
 from app.models import (
-    CrewMember, Gallery, Inquiry, MerchItem, MusicTrack, Post, PressAsset,
-    Scuttlebutt, SiteSettings, TourDate,
+    CrewMember,
+    Gallery,
+    Inquiry,
+    MerchItem,
+    MusicTrack,
+    Post,
+    PressAsset,
+    Scuttlebutt,
+    SiteSettings,
+    TourDate,
 )
 from app.services.email import send_inquiry_notification
 
@@ -19,21 +28,26 @@ def _live_scuttlebutts():
 def home():
     settings = SiteSettings.get_or_create()
     scuttle = _live_scuttlebutts()
-    recent = (Post.query
-              .filter(Post.published_at.isnot(None))
-              .filter(Post.published_at <= datetime.utcnow())
-              .order_by(Post.published_at.desc())
-              .limit(3).all())
-    return render_template("public/home.html",
-                           settings=settings, scuttlebutts=scuttle, posts=recent)
+    recent = (
+        Post.query.filter(Post.published_at.isnot(None))
+        .filter(Post.published_at <= datetime.utcnow())
+        .order_by(Post.published_at.desc())
+        .limit(3)
+        .all()
+    )
+    return render_template(
+        "public/home.html", settings=settings, scuttlebutts=scuttle, posts=recent
+    )
 
 
 @bp.get("/log")
 def log_index():
-    posts = (Post.query
-             .filter(Post.published_at.isnot(None))
-             .filter(Post.published_at <= datetime.utcnow())
-             .order_by(Post.published_at.desc()).all())
+    posts = (
+        Post.query.filter(Post.published_at.isnot(None))
+        .filter(Post.published_at <= datetime.utcnow())
+        .order_by(Post.published_at.desc())
+        .all()
+    )
     return render_template("public/log_index.html", posts=posts)
 
 
@@ -48,13 +62,17 @@ def log_detail(slug: str):
 @bp.get("/manifest")
 def manifest():
     now = datetime.utcnow()
-    upcoming = (TourDate.query
-                .filter(TourDate.status.in_(("confirmed", "tentative")))
-                .filter(TourDate.starts_at >= now)
-                .order_by(TourDate.starts_at).all())
-    past = (TourDate.query
-            .filter((TourDate.status == "past") | (TourDate.starts_at < now))
-            .order_by(TourDate.starts_at.desc()).all())
+    upcoming = (
+        TourDate.query.filter(TourDate.status.in_(("confirmed", "tentative")))
+        .filter(TourDate.starts_at >= now)
+        .order_by(TourDate.starts_at)
+        .all()
+    )
+    past = (
+        TourDate.query.filter((TourDate.status == "past") | (TourDate.starts_at < now))
+        .order_by(TourDate.starts_at.desc())
+        .all()
+    )
     return render_template("public/manifest.html", upcoming=upcoming, past=past)
 
 
@@ -100,9 +118,11 @@ def crows_nest_submit():
     email = (request.form.get("email") or "").strip()
     message = (request.form.get("message") or "").strip()
     if not from_name or not email or not message:
-        return render_template("public/crows_nest.html",
-                               press=PressAsset.query.order_by(PressAsset.sort_order).all(),
-                               error="Name, email, and message are required."), 400
+        return render_template(
+            "public/crows_nest.html",
+            press=PressAsset.query.order_by(PressAsset.sort_order).all(),
+            error="Name, email, and message are required.",
+        ), 400
 
     event_date_raw = (request.form.get("event_date") or "").strip()
     event_date_val: date | None = None
@@ -113,13 +133,16 @@ def crows_nest_submit():
             event_date_val = None
 
     inq = Inquiry(
-        kind=kind, from_name=from_name, email=email,
+        kind=kind,
+        from_name=from_name,
+        email=email,
         phone=(request.form.get("phone") or "").strip() or None,
         event_date=event_date_val,
         venue=(request.form.get("venue") or "").strip() or None,
         city=(request.form.get("city") or "").strip() or None,
         message=message,
     )
-    db.session.add(inq); db.session.commit()
+    db.session.add(inq)
+    db.session.commit()
     send_inquiry_notification(inq)
     return render_template("public/crows_nest_thanks.html", inq=inq)

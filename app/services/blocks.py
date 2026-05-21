@@ -2,6 +2,7 @@
 
 Each block: { "id": str, "type": str, "data": dict }
 """
+
 from __future__ import annotations
 
 import secrets

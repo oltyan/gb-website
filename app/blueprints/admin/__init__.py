@@ -1,5 +1,6 @@
 from functools import wraps
-from flask import abort, current_app, render_template
+
+from flask import current_app, render_template
 from flask_login import current_user
 
 from .views import bp
@@ -11,10 +12,12 @@ def require_admin_group(view):
         required = current_app.config.get("OIDC_GROUP_REQUIRED", "gb-developer")
         if not current_user.is_authenticated:
             from flask import redirect, request, url_for
+
             return redirect(url_for("auth.login", next=request.path))
         if not current_user.in_group(required):
             return render_template("auth/forbidden.html", required=required), 403
         return view(*args, **kwargs)
+
     return wrapper
 
 
@@ -27,4 +30,23 @@ def _gate():
 
 __all__ = ["bp", "require_admin_group"]
 
-from . import posts, crew, tour_dates, galleries, music, merch, press, inquiries, scuttlebutt, assets, blocks as _blocks, settings as _settings  # noqa: E402,F401
+# Sub-modules are imported here to register their routes on `bp`. The
+# imports MUST come after the blueprint is exported (via .views) so the
+# decorator-driven registrations resolve `bp` correctly — hence the
+# E402 ignore on this whole block. F401 is the unused-import warning;
+# these imports are intentionally "unused" in the lexical sense, used
+# only for their decorator side-effects.
+from . import (  # noqa: E402, F401
+    assets,
+    blocks,
+    crew,
+    galleries,
+    inquiries,
+    merch,
+    music,
+    posts,
+    press,
+    scuttlebutt,
+    settings,
+    tour_dates,
+)

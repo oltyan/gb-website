@@ -3,6 +3,7 @@ from wtforms import IntegerField, SelectField, StringField, TextAreaField
 from wtforms.validators import DataRequired, Length, Optional
 
 from app.models import CrewMember
+
 from . import bp
 from ._crud import register_crud
 
@@ -21,8 +22,11 @@ class CrewMemberForm(FlaskForm):
 
 
 register_crud(
-    bp, prefix="crew", label="Crew Member",
-    model=CrewMember, form_cls=CrewMemberForm,
+    bp,
+    prefix="crew",
+    label="Crew Member",
+    model=CrewMember,
+    form_cls=CrewMemberForm,
     list_cols=[
         ("Name", lambda c: c.name),
         ("Role", lambda c: c.role),

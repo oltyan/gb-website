@@ -2,10 +2,15 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 from flask import (
-    Blueprint, abort, current_app, redirect, render_template, request,
-    session, url_for,
+    Blueprint,
+    current_app,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
 )
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_user, logout_user
 
 from app.extensions import db, oauth
 from app.models import User
@@ -35,8 +40,11 @@ def oidc_callback():
     sub = userinfo["sub"]
     user = User.query.filter_by(oidc_sub=sub).one_or_none()
     if user is None:
-        user = User(oidc_sub=sub, email=userinfo.get("email", ""),
-                    display_name=userinfo.get("name", userinfo.get("email", "")))
+        user = User(
+            oidc_sub=sub,
+            email=userinfo.get("email", ""),
+            display_name=userinfo.get("name", userinfo.get("email", "")),
+        )
         db.session.add(user)
     user.email = userinfo.get("email", user.email)
     user.display_name = userinfo.get("name", user.display_name)

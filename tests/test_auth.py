@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-import pytest
 from app.extensions import db
 from app.models import User
 
@@ -77,6 +76,7 @@ def test_oidc_callback_creates_user_and_logs_in(client, app):
         assert response.status_code in (302, 303)
 
     from app.models import User
+
     with app.app_context():
         user = User.query.filter_by(oidc_sub="fa-user-001").one_or_none()
         assert user is not None

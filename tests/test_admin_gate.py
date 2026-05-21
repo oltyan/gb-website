@@ -1,6 +1,5 @@
-from flask_login import login_user
-from app.models import User
 from app.extensions import db
+from app.models import User
 
 
 def _make_user(app, groups: list[str]) -> int:

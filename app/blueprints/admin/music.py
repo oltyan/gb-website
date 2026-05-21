@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import DateField, IntegerField, StringField, TextAreaField
-from wtforms.validators import DataRequired, Optional, URL
+from wtforms.validators import URL, DataRequired, Optional
 
 from app.models import MusicTrack
+
 from . import bp
 from ._crud import register_crud
 
@@ -22,8 +23,11 @@ class MusicTrackForm(FlaskForm):
 
 
 register_crud(
-    bp, prefix="music", label="Music Track",
-    model=MusicTrack, form_cls=MusicTrackForm,
+    bp,
+    prefix="music",
+    label="Music Track",
+    model=MusicTrack,
+    form_cls=MusicTrackForm,
     list_cols=[
         ("Title", lambda t: t.title),
         ("Release", lambda t: t.release_name or "—"),

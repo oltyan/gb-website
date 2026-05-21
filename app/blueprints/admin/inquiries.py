@@ -2,6 +2,7 @@ from flask import abort, flash, redirect, render_template, request, url_for
 
 from app.extensions import db
 from app.models import Inquiry
+
 from . import bp, require_admin_group
 
 

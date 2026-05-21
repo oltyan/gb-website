@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
-from app.services.email import send_inquiry_notification
 from app.models import Inquiry
+from app.services.email import send_inquiry_notification
 
 
 def test_send_inquiry_notification_calls_smtp(app):

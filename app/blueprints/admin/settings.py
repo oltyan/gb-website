@@ -1,10 +1,11 @@
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, url_for
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, StringField, TextAreaField
-from wtforms.validators import Optional, URL
+from wtforms.validators import URL, Optional
 
 from app.extensions import db
 from app.models import SiteSettings
+
 from . import bp, require_admin_group
 
 

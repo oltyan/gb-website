@@ -1,6 +1,8 @@
 import os
-from flask import Flask, jsonify
 from dataclasses import asdict
+
+from flask import Flask, jsonify
+
 from .config import load_config
 from .extensions import csrf, db, login_manager, migrate, oauth
 
@@ -30,6 +32,7 @@ def create_app(config_name: str | None = None) -> Flask:
         return jsonify(status="ok")
 
     from .blueprints.public import bp as public_bp
+
     app.register_blueprint(public_bp)
 
     if app.config.get("OIDC_DISCOVERY_URL"):
@@ -42,20 +45,24 @@ def create_app(config_name: str | None = None) -> Flask:
         )
 
     from .blueprints.auth import bp as auth_bp
+
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
     from .blueprints.admin import bp as admin_bp
+
     app.register_blueprint(admin_bp, url_prefix="/admin")
 
     @app.template_global()
     def safe_url(endpoint, **values):
         try:
             from flask import url_for
+
             return url_for(endpoint, **values)
         except Exception:
             return "#"
 
     import markdown as md
+
     @app.template_filter("markdown")
     def _markdown_filter(text: str) -> str:
         if not text:
@@ -68,11 +75,10 @@ def create_app(config_name: str | None = None) -> Flask:
     def _pencil(text: str) -> str:
         if not text:
             return ""
-        return re.sub(r"==(.+?)==",
-                      r'<span class="bg-accent-amber/20 px-0.5">\1</span>',
-                      text)
+        return re.sub(r"==(.+?)==", r'<span class="bg-accent-amber/20 px-0.5">\1</span>', text)
 
     from .models import Gallery as _Gallery
+
     @app.template_global("get_gallery")
     def _get_gallery(gid: int):
         return db.session.get(_Gallery, gid)
