@@ -1,4 +1,13 @@
-{# Phase 6 fills this with the real dispatcher. Stub is harmless if post.blocks is empty. #}
 {% macro render_block(block) %}
-<div class="text-white/40 italic">[block type: {{ block.type }} — renderer pending]</div>
+  {% set t = block.type %}{% set d = block.data %}
+  {% if t == "paragraph" %}{% include "_blocks/paragraph.html" %}
+  {% elif t == "heading" %}{% include "_blocks/heading.html" %}
+  {% elif t == "image" %}{% include "_blocks/image.html" %}
+  {% elif t == "pull_quote" %}{% include "_blocks/pull_quote.html" %}
+  {% elif t == "gallery_inline" %}{% include "_blocks/gallery_inline.html" %}
+  {% elif t == "divider" %}{% include "_blocks/divider.html" %}
+  {% elif t == "callout" %}{% include "_blocks/callout.html" %}
+  {% elif t == "stat_pair" %}{% include "_blocks/stat_pair.html" %}
+  {% elif t == "bento_card" %}{% include "_blocks/bento_card.html" %}
+  {% endif %}
 {% endmacro %}

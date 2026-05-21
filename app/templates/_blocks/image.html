@@ -1,0 +1,8 @@
+<figure class="my-8 mx-auto max-w-3xl">
+  <div class="noir-frame bg-surface p-2 sketch-border border-{{ d.border or 'white' }}
+    {% if d.tilt %}{% if d.tilt < 0 %}rotate-[{{ d.tilt }}deg]{% else %}rotate-[{{ d.tilt }}deg]{% endif %}{% endif %}">
+    <img src="{{ d.url }}" alt="{{ d.alt or '' }}"
+      class="w-full {% if d.grayscale %}grayscale{% endif %}">
+  </div>
+  {% if d.caption %}<figcaption class="font-mono text-xs text-white/60 mt-2 text-center uppercase">{{ d.caption }}</figcaption>{% endif %}
+</figure>

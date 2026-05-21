@@ -49,3 +49,25 @@ def test_normalize_blocks_strict_raises():
     raw = [{"type": "bogus", "data": {}}]
     with pytest.raises(ValueError):
         normalize_blocks(raw, strict=True)
+
+
+def test_render_post_with_blocks(client, app):
+    from app.extensions import db
+    from app.models import Post
+    from datetime import datetime
+
+    with app.app_context():
+        p = Post(slug="blocky", title="Blocky", author_name="C",
+                 excerpt="", published_at=datetime.utcnow(),
+                 blocks=[
+                     {"id": "1", "type": "paragraph", "data": {"markdown": "Hello ==world==."}},
+                     {"id": "2", "type": "heading", "data": {"level": 2, "text": "A heading"}},
+                     {"id": "3", "type": "pull_quote", "data": {"text": "yo", "style": "amber-bar"}},
+                 ])
+        db.session.add(p); db.session.commit()
+    r = client.get("/log/blocky")
+    assert r.status_code == 200
+    body = r.data.decode()
+    assert "Hello" in body
+    assert "A heading" in body
+    assert "yo" in body

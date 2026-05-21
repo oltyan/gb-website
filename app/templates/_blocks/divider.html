@@ -1,0 +1,7 @@
+{% if d.style == "torn" %}
+<hr class="my-12 border-0 h-1 bg-[repeating-linear-gradient(90deg,#fff_0_8px,transparent_8px_16px)]">
+{% elif d.style == "dashed-amber" %}
+<hr class="my-12 border-t-2 border-dashed border-accent-amber">
+{% else %}
+<hr class="my-12 border-t border-white/40">
+{% endif %}

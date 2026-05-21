@@ -62,4 +62,19 @@ def create_app(config_name: str | None = None) -> Flask:
             return ""
         return md.markdown(text, extensions=["fenced_code", "tables", "nl2br"])
 
+    import re
+
+    @app.template_filter("pencil_highlight")
+    def _pencil(text: str) -> str:
+        if not text:
+            return ""
+        return re.sub(r"==(.+?)==",
+                      r'<span class="bg-accent-amber/20 px-0.5">\1</span>',
+                      text)
+
+    from .models import Gallery as _Gallery
+    @app.template_global("get_gallery")
+    def _get_gallery(gid: int):
+        return db.session.get(_Gallery, gid)
+
     return app

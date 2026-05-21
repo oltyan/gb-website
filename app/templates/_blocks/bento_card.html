@@ -1,0 +1,5 @@
+<a href="{{ d.link_url or '#' }}" class="block my-6 noir-frame bg-surface p-6 sketch-border border-accent-{{ d.accent or 'amber' }}">
+  <h3 class="font-hand text-2xl mb-2 sketch-underline inline-block">{{ d.title }}</h3>
+  <p class="text-on-surface-variant">{{ d.body }}</p>
+  {% if d.link_text %}<span class="mt-4 inline-block font-hand text-accent-amber uppercase">{{ d.link_text }} →</span>{% endif %}
+</a>

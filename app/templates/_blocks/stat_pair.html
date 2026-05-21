@@ -1,0 +1,8 @@
+<div class="grid grid-cols-2 gap-4 my-8 max-w-md mx-auto">
+  {% for side in [d.left, d.right] %}
+  <div class="bg-accent-{{ side.accent or 'red' }} text-white p-4 text-center noir-frame {% if loop.index is odd %}rotate-1{% else %}-rotate-1{% endif %} sketch-border">
+    <div class="text-5xl font-bold leading-none">{{ side.value }}</div>
+    <div class="font-hand uppercase text-lg">{{ side.label }}</div>
+  </div>
+  {% endfor %}
+</div>

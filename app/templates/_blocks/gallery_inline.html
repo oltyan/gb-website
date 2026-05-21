@@ -1,0 +1,10 @@
+{% set _gallery = get_gallery(d.gallery_id) %}
+{% if _gallery %}
+<div class="my-8 grid grid-cols-2 md:grid-cols-3 gap-3">
+  {% for img in _gallery.images %}
+  <div class="noir-frame bg-surface p-1 sketch-border {% if loop.index is odd %}-rotate-1{% else %}rotate-1{% endif %}">
+    <img src="{{ img.image_url }}" alt="{{ img.alt_text }}" class="w-full aspect-square object-cover grayscale">
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
