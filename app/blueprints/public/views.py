@@ -1,11 +1,12 @@
-from datetime import datetime
-from flask import Blueprint, abort, render_template
+from datetime import date, datetime
+from flask import Blueprint, abort, render_template, request
 
 from app.extensions import db
 from app.models import (
-    CrewMember, Gallery, MerchItem, MusicTrack, Post, PressAsset,
+    CrewMember, Gallery, Inquiry, MerchItem, MusicTrack, Post, PressAsset,
     Scuttlebutt, SiteSettings, TourDate,
 )
+from app.services.email import send_inquiry_notification
 
 bp = Blueprint("public", __name__)
 
@@ -92,5 +93,33 @@ def crows_nest():
 
 @bp.post("/crows-nest/submit")
 def crows_nest_submit():
-    # Stub: Phase 5 (Task 5.2) implements the real handler.
-    abort(501)
+    kind = (request.form.get("kind") or "general").strip()
+    if kind not in ("booking", "press", "general"):
+        kind = "general"
+    from_name = (request.form.get("from_name") or "").strip()
+    email = (request.form.get("email") or "").strip()
+    message = (request.form.get("message") or "").strip()
+    if not from_name or not email or not message:
+        return render_template("public/crows_nest.html",
+                               press=PressAsset.query.order_by(PressAsset.sort_order).all(),
+                               error="Name, email, and message are required."), 400
+
+    event_date_raw = (request.form.get("event_date") or "").strip()
+    event_date_val: date | None = None
+    if event_date_raw:
+        try:
+            event_date_val = date.fromisoformat(event_date_raw)
+        except ValueError:
+            event_date_val = None
+
+    inq = Inquiry(
+        kind=kind, from_name=from_name, email=email,
+        phone=(request.form.get("phone") or "").strip() or None,
+        event_date=event_date_val,
+        venue=(request.form.get("venue") or "").strip() or None,
+        city=(request.form.get("city") or "").strip() or None,
+        message=message,
+    )
+    db.session.add(inq); db.session.commit()
+    send_inquiry_notification(inq)
+    return render_template("public/crows_nest_thanks.html", inq=inq)

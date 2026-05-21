@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Message sent — The Grog Blossoms{% endblock %}
+{% block content %}
+<section class="px-6 py-24 max-w-2xl mx-auto">
+  <h1 class="font-hand text-6xl text-accent-amber sketch-underline inline-block">Message Hoisted!</h1>
+  <p class="mt-6 font-body text-on-surface-variant">
+    Thank ye, {{ inq.from_name }}. We'll be in touch on the next tide.
+  </p>
+  <a href="{{ url_for('public.home') }}" class="inline-block mt-12 px-6 py-3 bg-accent-red text-white font-hand uppercase">Back to Port</a>
+</section>
+{% endblock %}
