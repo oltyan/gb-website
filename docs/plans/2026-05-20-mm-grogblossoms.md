@@ -224,8 +224,11 @@ target-version = ["py312"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-ra --strict-markers"
 ```
+
+> **Note:** `pythonpath = ["."]` is required so bare `pytest` can discover the `app/` package. Without it the command in Task 0.2 Step 7 fails with `ModuleNotFoundError: No module named 'app'` because `pip install -e .` installs the distribution `mm-grogblossoms` but doesn't declare `app` as a package.
 
 - [ ] **Step 4: Bootstrap venv and install**
 
@@ -447,6 +450,13 @@ def create_app(config_name: str | None = None) -> Flask:
     csrf.init_app(app)
     login_manager.init_app(app)
     oauth.init_app(app)
+
+    # Placeholder user_loader so Flask-Login's template context processor
+    # can resolve `current_user` before the real User model exists.
+    # Task 1.1 replaces this with the real DB-backed loader.
+    @login_manager.user_loader
+    def _placeholder_user_loader(user_id):  # pragma: no cover
+        return None
 
     @app.get("/healthz")
     def healthz():
@@ -1249,9 +1259,12 @@ def oidc_callback():
 
 
 @bp.get("/logout")
-@login_required
 def logout():
+    # Idempotent: don't require an active login (stale-session users must be
+    # able to log out). logout_user() is a no-op when anonymous; the explicit
+    # session.pop guarantees the user_id marker is cleared in either case.
     logout_user()
+    session.pop("_user_id", None)
     return redirect(url_for("public.home"))
 
 
@@ -1463,17 +1476,21 @@ __all__ = ["bp", "require_admin_group"]
 Replace `app/blueprints/admin/views.py`:
 
 ```python
+from functools import wraps
+
 from flask import Blueprint, render_template
-from flask_login import login_required
 
 bp = Blueprint("admin", __name__)
 
 
-# Note: require_admin_group is imported in __init__.py to avoid circular import;
-# decorator is applied per-view to make intent explicit.
 def _require_group(view):
-    from . import require_admin_group
-    return require_admin_group(view)
+    """Late-binding wrapper: resolves require_admin_group at request time
+    so it works despite the import cycle (views imports __init__ which imports views)."""
+    @wraps(view)
+    def wrapper(*args, **kwargs):
+        from . import require_admin_group
+        return require_admin_group(view)(*args, **kwargs)
+    return wrapper
 
 
 @bp.get("/")
@@ -1481,6 +1498,8 @@ def _require_group(view):
 def dashboard():
     return render_template("admin/dashboard.html")
 ```
+
+> **Why the wrapper-inside-wrapper:** `_require_group` is invoked at *decoration time* (import time). At that moment `__init__.py` is partly loaded (the `from .views import bp` line is mid-execution) so `require_admin_group` is not yet bound. The inner `wrapper` defers the lookup to *request time*, when `__init__.py` has finished loading. Don't simplify this to a single-layer `from . import require_admin_group` inside `_require_group` — that fires at decoration time and raises `ImportError`.
 
 - [ ] **Step 5: Run tests**
 
