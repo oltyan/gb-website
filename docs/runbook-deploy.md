@@ -129,7 +129,7 @@ token. gb-website declares its hostname via `homebody.*` Docker labels
 
 ## Deploy a change
 
-`git push` to `main` → Jenkins `gb-website-deploy` job triggers → image pushed to GHCR → `withCredentials` renders `secrets.env` in the workspace → `docker compose pull && docker compose up -d` runs locally on the controller (mm-jenkins is on mycelium) → curl healthcheck against `https://www.grogblossoms.com/healthz`. mm-homebody picks up label changes on container restart with no manual reconcile.
+`git push` to `main` → Jenkins `gb-website-deploy` job triggers → `withCredentials` renders `secrets.env` in the workspace → `docker compose build` builds the image locally → `docker compose up -d` runs on the controller (mm-jenkins is on mycelium, same host as the container — no registry round-trip, matches the mm-sporekles pattern) → curl healthcheck against `https://www.grogblossoms.com/healthz`. mm-homebody picks up label changes on container restart with no manual reconcile.
 
 ## Restore from backup
 

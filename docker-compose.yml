@@ -1,6 +1,11 @@
 services:
   app:
-    image: ghcr.io/oltyan/gb-website:${TAG:-latest}
+    # Local build on mycelium — no registry round-trip (matches the
+    # mm-sporekles pattern). `build:` is read by `docker compose build`
+    # in Jenkinsfile.deploy; `image:` is the tag applied so `up -d` can
+    # find the artifact + so we get layer caching across deploys.
+    build: .
+    image: gb-website:latest
     container_name: gb-website-app
     # Rendered by Jenkinsfile.deploy on every build from withCredentials.
     # Path is relative to the compose working directory (the Jenkins
