@@ -24,7 +24,11 @@ Register `gb-website` in FusionAuth (`auth.musicalmycology.org`,
 - Group `gb-developer` → bound to this application's `gb-developer` role
 - Register chris's FA user against this application
 
-Capture **Client ID** and **Client Secret** for `secrets.env`.
+Capture **Client ID** and **Client Secret** and stash them in Jenkins as
+the `gb-website-oidc-client-id` and `gb-website-oidc-client-secret`
+credentials (provisioned in `mm-jenkins/jenkins.yaml`). The deploy job
+renders them into `secrets.env` on every build — never hand-edit the
+file on mycelium.
 
 ### 2. mm-homebody allowed_zones
 
@@ -60,33 +64,37 @@ Should already exist if mm-sporekles is up.
 
 ```bash
 ssh mycelium
-sudo mkdir -p /opt/gb-website/{data,backups,repo}
+sudo mkdir -p /opt/gb-website/{data,backups}
 sudo chown -R $USER:$USER /opt/gb-website
-cd /opt/gb-website
-git clone https://github.com/oltyan/gb-website.git repo
-cd repo
+```
 
-# Secrets
-cat > /opt/gb-website/secrets.env <<EOF
-SECRET_KEY=$(openssl rand -hex 32)
-OIDC_CLIENT_ID=...
-OIDC_CLIENT_SECRET=...
-OIDC_DISCOVERY_URL=https://auth.musicalmycology.org/.well-known/openid-configuration
-OIDC_GROUP_REQUIRED=gb-developer
-CDN_BASE_URL=https://design-assets.grogblossoms.com/
-SPOREKLES_API_BASE=http://mm-sporekles-api:3000
-SPOREKLES_TENANT=gb
-SMTP_HOST=smtp.fastmail.com
-SMTP_PORT=587
-SMTP_USER=...
-SMTP_PASSWORD=...
-SMTP_FROM=no-reply@grogblossoms.com
-CONTACT_EMAIL=chris@grogblossoms.com
-SESSION_COOKIE_SECURE=true
-EOF
-chmod 600 /opt/gb-website/secrets.env
+That's it for on-host setup. The repo itself is checked out into the
+Jenkins workspace each build — there is no permanent `/opt/gb-website/repo`
+clone to keep in sync. `secrets.env` is rendered into that workspace
+from Jenkins credentials by `Jenkinsfile.deploy` on every deploy (see
+the mm-sporekles `api/.env` pattern this mirrors), so do not create one
+by hand.
 
-# Backup env
+Provision these credentials in `mm-jenkins/jenkins.yaml` before the
+first deploy fires:
+
+| Credential ID | Kind | Maps to |
+|---|---|---|
+| `gb-website-secret-key` | string | `SECRET_KEY` |
+| `gb-website-oidc-client-id` | string | `OIDC_CLIENT_ID` |
+| `gb-website-oidc-client-secret` | string | `OIDC_CLIENT_SECRET` |
+| `gb-website-smtp` | usernamePassword | `SMTP_USER` / `SMTP_PASSWORD` |
+
+Non-secret config (OIDC discovery URL, sporekles API base, CDN base
+URL, SMTP host/port/from, contact email, tenant) is inlined in the
+Jenkinsfile heredoc — no Jenkins credential needed.
+
+`backup.env` stays out-of-band — restic/B2 keys are restore-time
+credentials and don't belong in the per-deploy render path. Bootstrap
+once:
+
+```bash
+ssh mycelium
 cat > /opt/gb-website/backup.env <<EOF
 RESTIC_REPOSITORY=b2:bucket-name:gb-website
 RESTIC_PASSWORD=$(openssl rand -hex 32)   # SAVE THIS — required to restore
@@ -94,12 +102,13 @@ B2_ACCOUNT_ID=...
 B2_ACCOUNT_KEY=...
 EOF
 chmod 600 /opt/gb-website/backup.env
-
-# First start
-cd /opt/gb-website/repo
-docker compose up -d
-docker compose logs -f --tail 100
 ```
+
+Then trigger the first Jenkins build of `gb-website-deploy`. It will
+push the image, render `secrets.env` into the workspace, and
+`docker compose up -d` directly on the controller (mm-jenkins is itself
+on mycelium — no ssh hop). Tail `docker compose logs -f --tail 100` from
+the workspace dir to watch the first start.
 
 There is **no** `cloudflared` container in this stack. mm-homebody owns
 the single mycelium cloudflared instance and the only Cloudflare API
@@ -116,16 +125,24 @@ token. gb-website declares its hostname via `homebody.*` Docker labels
 
 ## Deploy a change
 
-`git push` to `main` → Jenkins `gb-website-deploy` job triggers → image pushed to GHCR → SSH to mycelium → `docker compose pull && docker compose up -d` → curl healthcheck. mm-homebody picks up label changes on container restart with no manual reconcile.
+`git push` to `main` → Jenkins `gb-website-deploy` job triggers → image pushed to GHCR → `withCredentials` renders `secrets.env` in the workspace → `docker compose pull && docker compose up -d` runs locally on the controller (mm-jenkins is on mycelium) → curl healthcheck against `https://www.grogblossoms.com/healthz`. mm-homebody picks up label changes on container restart with no manual reconcile.
 
 ## Restore from backup
 
+There is no permanent on-host clone — restore from a throwaway clone
+plus the live Jenkins workspace for compose context.
+
 ```bash
 ssh mycelium
-cd /opt/gb-website/repo && docker compose stop app
+# Stop the running app via its container name (no working-dir dependency).
+docker stop gb-website-app
 
-mkdir -p /tmp/restore && /opt/gb-website/repo/scripts/restore.sh /tmp/restore
+# Pull the restore script from a temp clone.
+git clone --depth 1 https://github.com/oltyan/gb-website.git /tmp/gb-website-restore
+mkdir -p /tmp/restore && /tmp/gb-website-restore/scripts/restore.sh /tmp/restore
 cp /tmp/restore/opt/gb-website/backups/grogblossoms-YYYY-MM-DD.db /opt/gb-website/data/grogblossoms.db
 
-docker compose start app
+# Re-trigger the Jenkins deploy job to bring the app back up with the
+# restored DB — that's the canonical path (renders secrets.env + runs
+# compose). Trigger from the Jenkins UI or `gh workflow run`-equivalent.
 ```

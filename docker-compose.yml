@@ -2,7 +2,10 @@ services:
   app:
     image: ghcr.io/oltyan/gb-website:${TAG:-latest}
     container_name: gb-website-app
-    env_file: /opt/gb-website/secrets.env
+    # Rendered by Jenkinsfile.deploy on every build from withCredentials.
+    # Path is relative to the compose working directory (the Jenkins
+    # workspace at deploy time; the repo root for local debugging).
+    env_file: secrets.env
     environment:
       - FLASK_ENV=production
       - DATABASE_URL=sqlite:////data/grogblossoms.db
