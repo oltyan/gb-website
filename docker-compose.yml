@@ -2,7 +2,7 @@ services:
   app:
     image: ghcr.io/oltyan/gb-website:${TAG:-latest}
     container_name: gb-website-app
-    env_file: /opt/gb-website/secrets.env
+    env_file: .env
     environment:
       - FLASK_ENV=production
       - DATABASE_URL=sqlite:////data/grogblossoms.db

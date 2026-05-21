@@ -66,8 +66,9 @@ cd /opt/gb-website
 git clone https://github.com/oltyan/gb-website.git repo
 cd repo
 
-# Secrets
-cat > /opt/gb-website/secrets.env <<EOF
+# Secrets — lives at /opt/gb-website/repo/.env, gitignored.
+# Docker compose auto-resolves `env_file: .env` relative to the compose file.
+cat > .env <<EOF
 SECRET_KEY=$(openssl rand -hex 32)
 OIDC_CLIENT_ID=...
 OIDC_CLIENT_SECRET=...
@@ -84,9 +85,9 @@ SMTP_FROM=no-reply@grogblossoms.com
 CONTACT_EMAIL=chris@grogblossoms.com
 SESSION_COOKIE_SECURE=true
 EOF
-chmod 600 /opt/gb-website/secrets.env
+chmod 600 .env
 
-# Backup env
+# Backup env — kept outside the repo since it's not consumed by compose.
 cat > /opt/gb-website/backup.env <<EOF
 RESTIC_REPOSITORY=b2:bucket-name:gb-website
 RESTIC_PASSWORD=$(openssl rand -hex 32)   # SAVE THIS — required to restore
@@ -96,7 +97,6 @@ EOF
 chmod 600 /opt/gb-website/backup.env
 
 # First start
-cd /opt/gb-website/repo
 docker compose up -d
 docker compose logs -f --tail 100
 ```
