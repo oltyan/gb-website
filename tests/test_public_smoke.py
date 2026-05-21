@@ -104,3 +104,21 @@ def test_crows_nest_renders(client, app):
     r = client.get("/crows-nest")
     assert r.status_code == 200
     assert b"Make Contact" in r.data
+
+
+def test_feed_renders(client, app):
+    r = client.get("/feed.xml")
+    assert r.status_code == 200
+    assert b"<rss" in r.data
+
+
+def test_sitemap_renders(client):
+    r = client.get("/sitemap.xml")
+    assert r.status_code == 200
+    assert b"<urlset" in r.data
+
+
+def test_robots_renders(client):
+    r = client.get("/robots.txt")
+    assert r.status_code == 200
+    assert b"Disallow: /admin/" in r.data
