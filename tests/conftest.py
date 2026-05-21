@@ -18,6 +18,7 @@ os.environ.setdefault("CONTACT_EMAIL", "chris@example.test")
 def app():
     from app import create_app
     app = create_app(config_name="testing")
+    app.config["WTF_CSRF_ENABLED"] = False
     with app.app_context():
         from app.extensions import db
         db.create_all()
