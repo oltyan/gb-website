@@ -8,9 +8,9 @@ os.environ.setdefault("OIDC_CLIENT_ID", "test-client")
 os.environ.setdefault("OIDC_CLIENT_SECRET", "test-secret")
 os.environ.setdefault("OIDC_DISCOVERY_URL", "https://example.test/.well-known/openid-configuration")
 os.environ.setdefault("OIDC_GROUP_REQUIRED", "gb-developer")
-os.environ.setdefault("CDN_BASE_URL", "https://design-assets.musicalmycology.org/")
-os.environ.setdefault("S3_BUCKET", "__PLACEHOLDER__")
-os.environ.setdefault("S3_PREFIX", "grogblossoms/")
+os.environ.setdefault("CDN_BASE_URL", "https://design-assets.grogblossoms.com/")
+os.environ.setdefault("SPOREKLES_API_BASE", "http://sporekles.test")
+os.environ.setdefault("SPOREKLES_TENANT", "gb")
 os.environ.setdefault("CONTACT_EMAIL", "chris@example.test")
 
 

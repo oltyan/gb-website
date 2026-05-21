@@ -17,12 +17,9 @@ OIDC_CLIENT_ID=...
 OIDC_CLIENT_SECRET=...
 OIDC_DISCOVERY_URL=https://fa.example/.well-known/openid-configuration
 OIDC_GROUP_REQUIRED=gb-developer
-CDN_BASE_URL=https://design-assets.musicalmycology.org/
-S3_BUCKET=__PLACEHOLDER__
-S3_PREFIX=grogblossoms/
-S3_REGION=us-east-1
-AWS_ACCESS_KEY_ID=__PLACEHOLDER__
-AWS_SECRET_ACCESS_KEY=__PLACEHOLDER__
+CDN_BASE_URL=https://design-assets.grogblossoms.com/
+SPOREKLES_API_BASE=http://mm-sporekles-api:3000
+SPOREKLES_TENANT=gb
 SMTP_HOST=smtp.fastmail.com
 SMTP_PORT=587
 SMTP_USER=...
@@ -50,6 +47,20 @@ cd /opt/gb-website/repo
 docker compose up -d
 docker compose logs -f --tail 100
 ```
+
+## Sporekles sidecar network
+
+The app reaches the mm-sporekles uploader at `http://mm-sporekles-api:3000`
+on the `shared-tunnel` Docker network. That network is created by
+mm-sporekles' own deploy. If gb-website is brought up first, create the
+network manually:
+
+```bash
+docker network create shared-tunnel
+```
+
+After mm-sporekles deploys, both stacks share the network and gb-website
+can resolve `mm-sporekles-api` by service name.
 
 ## Cloudflare Tunnel setup (once, in CF dashboard)
 
