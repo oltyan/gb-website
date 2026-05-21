@@ -44,3 +44,11 @@ target-version = ["py312"]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
 pythonpath = ["."]
+
+# Without this, setuptools auto-discovery sees `app/`, `docker/`, and
+# `migrations/` as three competing top-level packages and refuses to
+# install (Multiple top-level packages discovered in flat-layout). Only
+# `app` is actually a Python package — `docker/` holds Dockerfile assets
+# and `migrations/` is Alembic's env, neither importable.
+[tool.setuptools.packages.find]
+include = ["app*"]
