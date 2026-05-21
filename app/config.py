@@ -12,11 +12,8 @@ class Config:
     OIDC_DISCOVERY_URL: str
     OIDC_GROUP_REQUIRED: str
     CDN_BASE_URL: str
-    S3_BUCKET: str
-    S3_PREFIX: str
-    S3_REGION: str
-    AWS_ACCESS_KEY_ID: str
-    AWS_SECRET_ACCESS_KEY: str
+    SPOREKLES_API_BASE: str
+    SPOREKLES_TENANT: str
     SMTP_HOST: str
     SMTP_PORT: int
     SMTP_USER: str
@@ -48,12 +45,9 @@ def load_config(name: str = "production") -> Config:
         OIDC_CLIENT_SECRET=_env("OIDC_CLIENT_SECRET"),
         OIDC_DISCOVERY_URL=_env("OIDC_DISCOVERY_URL"),
         OIDC_GROUP_REQUIRED=_env("OIDC_GROUP_REQUIRED", "gb-developer"),
-        CDN_BASE_URL=_env("CDN_BASE_URL", "https://design-assets.musicalmycology.org/"),
-        S3_BUCKET=_env("S3_BUCKET", "__PLACEHOLDER__"),
-        S3_PREFIX=_env("S3_PREFIX", "grogblossoms/"),
-        S3_REGION=_env("S3_REGION", "us-east-1"),
-        AWS_ACCESS_KEY_ID=_env("AWS_ACCESS_KEY_ID"),
-        AWS_SECRET_ACCESS_KEY=_env("AWS_SECRET_ACCESS_KEY"),
+        CDN_BASE_URL=_env("CDN_BASE_URL", "https://design-assets.grogblossoms.com/"),
+        SPOREKLES_API_BASE=_env("SPOREKLES_API_BASE", "http://mm-sporekles-api:3000"),
+        SPOREKLES_TENANT=_env("SPOREKLES_TENANT", "gb"),
         SMTP_HOST=_env("SMTP_HOST"),
         SMTP_PORT=int(_env("SMTP_PORT", "587")),
         SMTP_USER=_env("SMTP_USER"),

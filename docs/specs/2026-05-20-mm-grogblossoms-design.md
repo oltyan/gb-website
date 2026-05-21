@@ -469,3 +469,52 @@ Jenkins pipeline:
 - **SQLite write contention.** Single-writer; admin is single-user (you). Public site is read-only. No risk at expected load.
 - **Image hot-linking by third parties.** Cache-Control immutable + CDN bandwidth absorption is the only defense. Mitigation: monitor CDN usage; add a Referer-based CloudFront rule if abuse appears.
 - **OIDC provider outage locks out admin.** Document a break-glass: env var `EMERGENCY_LOGIN_TOKEN` that, when set, unlocks `/admin` with a one-time URL. Disabled by default.
+
+## Postscript (2026-05-20) — sporekles architecture shift
+
+The asset-storage section of this spec describes a model that did not survive:
+gb-website was meant to hold its own scoped IAM key and write to a shared
+mm-sporekles bucket under a `grogblossoms/` prefix using boto3 directly.
+That model is **obsolete**. Retained here as historical record.
+
+What actually shipped:
+
+- mm-sporekles is now a multi-tenant **sidecar API** (Fastify, `api/src/routes/assets.ts`)
+  registered in `mm-sporekles/tenants.yml`. The `gb` tenant has its own bucket
+  (`gb-design-assets`), its own CloudFront distribution
+  (`E1KERTUPUSBD9U` → `design-assets.grogblossoms.com`), and its own FA group
+  (`gb-developer`).
+- Uploads/deletes/replaces are HTTP multipart calls into the sidecar at
+  `POST /:tenant/assets`. The sidecar performs S3 write + `manifest.json` regen
+  + CloudFront invalidation server-side.
+- Auth is **not** Bearer-token based. The sidecar reads
+  `X-Auth-Request-Email/User/Groups` headers (oauth2-proxy / mm-mycelium-gateway
+  pattern). Gb-website forwards the admin's identity in those headers when
+  calling the sidecar over the `shared-tunnel` Docker network. The sidecar is
+  not exposed externally — the network is the trust boundary.
+- Config keys `S3_BUCKET`, `S3_PREFIX`, `S3_REGION`, `AWS_ACCESS_KEY_ID`,
+  `AWS_SECRET_ACCESS_KEY`, the `boto3` dependency, and the `register_url()`
+  "paste CDN URL" fallback are all gone. Replaced by `SPOREKLES_API_BASE` +
+  `SPOREKLES_TENANT` and a real multipart upload form in `/admin/assets/`.
+
+### Group model
+
+Gb-website admins need **only `gb-developer`** to use the upload form here.
+
+The MM ecosystem has a separate gateway-side `access_tier` gate
+(mm-mycelium-gateway PR #25, sporekles commit `faeaa2f`) that enforces
+`mm-developer` membership on requests reaching sporekles via
+`mycelium.musicalmycology.org/sporekles/*`. That gate does **not** apply to
+gb-website's upload path — `mm-sporekles-api` is only reachable on the
+`shared-tunnel` Docker network and has no public ingress. The trust boundary
+is the network; the per-tenant `gb-developer` check inside
+`api/src/routes/assets.ts` is the only authorization gb-website needs to
+satisfy. Per mm-mycelium-gateway's group-gating spec, `gb-developer` is
+explicitly an app-internal sporekles RBAC role, not an MM-tier group.
+
+(Admins who also want to use sporekles' own SPA at
+`mycelium.musicalmycology.org/sporekles/` would need `mm-developer` on top.
+Out of scope for this site.)
+
+See `app/services/storage.py::SporeklesClient` and `docs/runbook-deploy.md`.
+

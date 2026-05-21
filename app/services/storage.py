@@ -1,68 +1,129 @@
-"""S3 uploader to mm-sporekles' design-assets bucket.
+"""HTTP client for the mm-sporekles sidecar uploader.
 
-v1: PLACEHOLDER implementation. Real boto3 wiring lands once the
-gb-website-uploader IAM user is provisioned (see spec, "Image flow").
-
-Until then, the admin asset picker uses the `register_url()` path: paste a
-CDN URL of a file you've already placed in the bucket via other means.
+The sidecar (Fastify, mm-sporekles repo `api/src/routes/assets.ts`) is the
+single write path into the per-tenant S3 bucket. It handles content-type
+sniffing, manifest.json regen, and CloudFront invalidation. Gb-website
+forwards the admin's identity via the same X-Auth-Request-* headers that
+mm-mycelium-gateway injects upstream — the sidecar isn't reachable from
+outside the shared-tunnel Docker network, so the network is the trust
+boundary.
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import BinaryIO
 
+import requests
 from flask import current_app
 
 from app.extensions import db
 from app.models import Asset
 
 
-class UploaderNotProvisioned(RuntimeError):
-    pass
+class SporeklesError(RuntimeError):
+    """Raised when the sidecar refuses an upload or is unreachable."""
+
+    def __init__(self, message: str, *, status_code: int | None = None):
+        super().__init__(message)
+        self.status_code = status_code
 
 
 @dataclass
-class UploadResult:
-    asset: Asset
+class AuthContext:
+    email: str
+    user: str
+    groups: list[str]
+
+    def headers(self) -> dict[str, str]:
+        return {
+            "X-Auth-Request-Email": self.email,
+            "X-Auth-Request-User": self.user,
+            "X-Auth-Request-Groups": ",".join(self.groups),
+        }
 
 
-def upload(file_obj: BinaryIO, filename: str, content_type: str) -> UploadResult:
-    """Stream a file to S3, persist an Asset row, return both."""
-    bucket = current_app.config.get("S3_BUCKET", "__PLACEHOLDER__")
-    if bucket.startswith("__PLACEHOLDER__"):
-        raise UploaderNotProvisioned(
-            "S3 uploader is not yet provisioned. Use the 'Paste CDN URL' flow "
-            "in /admin/assets/ until mm-sporekles infra exposes the uploader."
+class SporeklesClient:
+    def __init__(
+        self,
+        api_base: str,
+        tenant: str,
+        get_auth: Callable[[], AuthContext],
+        *,
+        timeout: float = 30.0,
+        session: requests.Session | None = None,
+    ):
+        self.api_base = api_base.rstrip("/")
+        self.tenant = tenant
+        self._get_auth = get_auth
+        self._timeout = timeout
+        self._session = session or requests.Session()
+
+    def upload_asset(
+        self,
+        file_obj: BinaryIO,
+        filename: str,
+        content_type: str,
+        *,
+        caption: str | None = None,
+    ) -> Asset:
+        url = f"{self.api_base}/{self.tenant}/assets"
+        files = {"file": (filename, file_obj, content_type)}
+        headers = self._get_auth().headers()
+
+        try:
+            resp = self._session.post(
+                url, files=files, headers=headers, timeout=self._timeout
+            )
+        except requests.RequestException as exc:
+            raise SporeklesError(f"sporekles unreachable: {exc}") from exc
+
+        if resp.status_code >= 400:
+            try:
+                body = resp.json()
+                msg = body.get("error") or resp.text
+            except ValueError:
+                msg = resp.text or f"HTTP {resp.status_code}"
+            raise SporeklesError(msg, status_code=resp.status_code)
+
+        try:
+            body = resp.json()
+        except ValueError as exc:
+            raise SporeklesError(f"sporekles returned non-JSON: {resp.text!r}") from exc
+
+        entry = body.get("entry")
+        if not entry:
+            raise SporeklesError(f"sporekles response missing entry: {body!r}")
+
+        # Sidecar key prefix mirrors the URL category path: /<tenant>/assets -> assets/<filename>
+        key = f"assets/{entry['filename']}"
+        asset = Asset(
+            key=key,
+            url=entry["url"],
+            filename=entry["filename"],
+            content_type=entry.get("contentType", content_type),
+            size_bytes=entry.get("bytes", 0),
+            caption=caption or None,
         )
-    # When the real implementation lands:
-    #   import boto3
-    #   key = f"{current_app.config['S3_PREFIX']}{_safe_name(filename)}"
-    #   s3 = boto3.client('s3', region_name=current_app.config['S3_REGION'])
-    #   s3.upload_fileobj(file_obj, bucket, key,
-    #       ExtraArgs={'ContentType': content_type,
-    #                  'CacheControl': 'public, max-age=31536000, immutable'})
-    #   url = current_app.config['CDN_BASE_URL'].rstrip('/') + '/' + key
-    #   asset = Asset(key=key, url=url, filename=filename, content_type=content_type, size_bytes=…)
-    #   db.session.add(asset); db.session.commit()
-    #   return UploadResult(asset=asset)
-    raise UploaderNotProvisioned("Real uploader implementation pending.")
+        db.session.add(asset)
+        db.session.commit()
+        return asset
 
 
-def register_url(public_url: str, *, caption: str = "") -> Asset:
-    """Record an externally-uploaded CDN URL as an Asset row.
+def get_client() -> SporeklesClient:
+    """Build a SporeklesClient configured from the current app + session."""
+    from flask_login import current_user
 
-    The URL is expected to be under CDN_BASE_URL + S3_PREFIX.
-    """
-    cdn = current_app.config["CDN_BASE_URL"].rstrip("/") + "/"
-    prefix = current_app.config["S3_PREFIX"]
-    if not public_url.startswith(cdn + prefix):
-        raise ValueError(f"URL must start with {cdn}{prefix}")
-    key = public_url[len(cdn):]
-    filename = key.rsplit("/", 1)[-1]
-    asset = Asset(
-        key=key, url=public_url, filename=filename,
-        content_type="application/octet-stream", size_bytes=0,
-        caption=caption or None,
-    )
-    db.session.add(asset); db.session.commit()
-    return asset
+    api_base = current_app.config["SPOREKLES_API_BASE"]
+    tenant = current_app.config["SPOREKLES_TENANT"]
+
+    def _auth() -> AuthContext:
+        if not getattr(current_user, "is_authenticated", False):
+            raise SporeklesError("upload requires an authenticated admin")
+        return AuthContext(
+            email=current_user.email or "",
+            user=current_user.display_name or current_user.email or "",
+            groups=list(current_user.groups or []),
+        )
+
+    return SporeklesClient(api_base=api_base, tenant=tenant, get_auth=_auth)

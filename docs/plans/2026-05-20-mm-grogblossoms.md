@@ -6041,6 +6041,37 @@ After all phases land, verify against the spec:
 - [ ] Docs are committed: spec, plan, runbook, README.
 - [ ] All pytest tests pass: `pytest -v`.
 
+## Postscript (2026-05-20) — sporekles architecture shift
+
+The storage-service sections of this plan (the `S3_BUCKET/S3_PREFIX/AWS_*`
+config, the `UploaderNotProvisioned` placeholder, the `register_url()` admin
+form, the boto3 import) describe v1 as it was authored. Those parts are
+**obsolete** as of 2026-05-20 and have been replaced; the surrounding
+plan/checklist is retained as historical record.
+
+Replacement:
+
+- `app/services/storage.py` is now `SporeklesClient`, an HTTP multipart client
+  for the mm-sporekles sidecar API. POSTs `{api_base}/{tenant}/assets` with
+  the file, sends `X-Auth-Request-Email/User/Groups` headers (oauth2-proxy
+  model — sporekles does not check Bearer tokens), parses the response
+  `entry` into an `Asset` row.
+- Config: drop `S3_*`, `AWS_*`, `boto3`. Add `SPOREKLES_API_BASE`
+  (default `http://mm-sporekles-api:3000`), `SPOREKLES_TENANT` (`gb`).
+  `CDN_BASE_URL` defaults to `https://design-assets.grogblossoms.com/`.
+- Admin: the "Paste CDN URL" form is gone. `/admin/assets/upload` is a real
+  multipart upload that streams to the sidecar.
+- Docker compose joins the `shared-tunnel` network so it can reach
+  `mm-sporekles-api` by service name.
+
+Why the shift: sporekles became multi-tenant (each tenant in `tenants.yml`
+gets its own bucket + distro + IAM users + FA group). Direct boto3 from
+multiple consuming apps would have duplicated content-type sniffing,
+manifest regen, and CloudFront invalidation in every consumer. Centralising
+those concerns in the sidecar removed that duplication and let each tenant
+keep its own CDN hostname.
+
+
 
 
 

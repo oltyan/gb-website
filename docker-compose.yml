@@ -10,6 +10,9 @@ services:
     volumes:
       - /opt/gb-website/data:/data
     restart: unless-stopped
+    networks:
+      - default
+      - shared-tunnel
     labels:
       - homebody.service=gb-website
     healthcheck:
@@ -31,3 +34,7 @@ services:
         condition: service_healthy
     labels:
       - homebody.service=gb-website-tunnel
+
+networks:
+  shared-tunnel:
+    external: true

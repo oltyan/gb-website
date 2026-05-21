@@ -4,13 +4,13 @@
 <h1 class="text-3xl mb-6">Media</h1>
 
 <div class="border border-white/20 p-4 max-w-3xl mb-8">
-  <h2 class="text-sm uppercase tracking-widest mb-3 text-white/60">Register CDN URL</h2>
-  <p class="text-xs text-white/40 mb-3">Until the IAM uploader is provisioned, drop the file in the bucket via other means, then paste the public URL here.</p>
-  <form method="post" action="{{ url_for('admin.assets_register') }}" class="space-y-2">
+  <h2 class="text-sm uppercase tracking-widest mb-3 text-white/60">Upload asset</h2>
+  <p class="text-xs text-white/40 mb-3">Pushed through the mm-sporekles sidecar — manifest + CDN cache are invalidated automatically.</p>
+  <form method="post" action="{{ url_for('admin.assets_upload') }}" enctype="multipart/form-data" class="space-y-2">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input name="url" placeholder="https://design-assets.musicalmycology.org/grogblossoms/…" class="w-full bg-black/40 border border-white/20 px-3 py-2 font-mono text-sm">
+    <input type="file" name="file" required class="w-full bg-black/40 border border-white/20 px-3 py-2 font-mono text-sm text-white">
     <input name="caption" placeholder="Caption (optional)" class="w-full bg-black/40 border border-white/20 px-3 py-2">
-    <button class="px-4 py-2 bg-white text-black uppercase tracking-widest text-sm">Register</button>
+    <button class="px-4 py-2 bg-white text-black uppercase tracking-widest text-sm">Upload</button>
   </form>
 </div>
 
@@ -34,7 +34,7 @@
       <td class="px-3 text-xs">{{ a.uploaded_at.strftime('%Y-%m-%d') }}</td>
     </tr>
   {% else %}
-    <tr><td colspan="3" class="py-8 text-center text-white/40">No assets registered.</td></tr>
+    <tr><td colspan="3" class="py-8 text-center text-white/40">No assets uploaded.</td></tr>
   {% endfor %}
   </tbody>
 </table>
