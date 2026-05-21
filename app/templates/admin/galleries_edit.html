@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% block title %}Edit Gallery — Admin{% endblock %}
+{% block content %}
+<h1 class="text-3xl mb-6">Edit Gallery</h1>
+
+<form method="post" class="space-y-4 max-w-3xl mb-12">
+  {{ form.hidden_tag() }}
+  {% for field in form if field.name not in ('csrf_token',) %}
+  <div>
+    <label class="block text-xs uppercase tracking-widest text-white/60 mb-1">{{ field.label.text }}</label>
+    {{ field(class_="w-full bg-black/40 border border-white/20 px-3 py-2 text-white font-mono") }}
+  </div>
+  {% endfor %}
+  <button class="px-6 py-2 bg-white text-black uppercase tracking-widest">Save Gallery</button>
+</form>
+
+<h2 class="text-2xl mb-4">Images ({{ gallery.images|length }})</h2>
+
+<form action="{{ url_for('admin.galleries_add_image', id=gallery.id) }}" method="post" class="space-y-3 max-w-3xl mb-8 border border-white/20 p-4">
+  {{ image_form.hidden_tag() }}
+  <input name="image_url" placeholder="https://design-assets.musicalmycology.org/grogblossoms/…" class="w-full bg-black/40 border border-white/20 px-3 py-2 font-mono">
+  <input name="caption" placeholder="Caption" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+  <input name="alt_text" placeholder="Alt text" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+  <button class="px-4 py-2 bg-white text-black uppercase tracking-widest text-sm">+ Add image</button>
+</form>
+
+<ul class="space-y-2 max-w-3xl">
+{% for img in gallery.images %}
+  <li class="flex items-center gap-4 border border-white/10 p-3">
+    <img src="{{ img.image_url }}" alt="{{ img.alt_text }}" class="w-20 h-20 object-cover grayscale">
+    <div class="flex-1">
+      <div class="text-sm">{{ img.caption or '—' }}</div>
+      <div class="text-xs text-white/40 font-mono break-all">{{ img.image_url }}</div>
+    </div>
+    <form action="{{ url_for('admin.galleries_move_image', gid=gallery.id, iid=img.id) }}" method="post" class="inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="direction" value="up">
+      <button class="px-2 py-1 border border-white/20 text-xs">↑</button>
+    </form>
+    <form action="{{ url_for('admin.galleries_move_image', gid=gallery.id, iid=img.id) }}" method="post" class="inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="direction" value="down">
+      <button class="px-2 py-1 border border-white/20 text-xs">↓</button>
+    </form>
+    <form action="{{ url_for('admin.galleries_delete_image', gid=gallery.id, iid=img.id) }}" method="post" class="inline" onsubmit="return confirm('Remove?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="px-2 py-1 border border-red-500/40 text-red-300 text-xs">remove</button>
+    </form>
+  </li>
+{% else %}
+  <li class="text-white/40">No images yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}
