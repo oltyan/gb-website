@@ -1,4 +1,5 @@
 """HTMX endpoints for the post block editor."""
+
 import json
 
 from flask import abort, flash, redirect, render_template, request, url_for
@@ -6,6 +7,7 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from app.extensions import db
 from app.models import Post
 from app.services.blocks import BLOCK_TYPES, normalize_blocks
+
 from . import bp, require_admin_group
 
 
@@ -15,6 +17,7 @@ def blocks_new_partial(block_type: str):
     if block_type not in BLOCK_TYPES:
         abort(404)
     import secrets
+
     return render_template(
         f"admin/_blocks/{block_type}_form.html",
         block={"id": f"blk_{secrets.token_hex(6)}", "type": block_type, "data": {}},

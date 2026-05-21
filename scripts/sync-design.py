@@ -2,6 +2,7 @@
 
 Mirrors the pattern of mm-website's tools/sync-sporekles-css.mjs.
 """
+
 from __future__ import annotations
 
 import argparse

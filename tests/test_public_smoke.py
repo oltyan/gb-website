@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from app.extensions import db
 from app.models import Post, Scuttlebutt, SiteSettings
-from datetime import datetime
 
 
 def test_home_renders(client):
@@ -17,9 +18,15 @@ def _seed_home(app):
         s.ports_visited = 12
         s.grog_pints = "100+"
         db.session.add(Scuttlebutt(text="Test scuttle", accent="amber", sort_order=0))
-        db.session.add(Post(slug="p1", title="Raid at Port Royal", author_name="C",
-                            excerpt="The fog was thick",
-                            published_at=datetime.utcnow()))
+        db.session.add(
+            Post(
+                slug="p1",
+                title="Raid at Port Royal",
+                author_name="C",
+                excerpt="The fog was thick",
+                published_at=datetime.utcnow(),
+            )
+        )
         db.session.commit()
 
 
@@ -36,9 +43,16 @@ def test_home_renders_with_seeded_data(client, app):
 
 def test_log_index_and_detail(client, app):
     with app.app_context():
-        db.session.add(Post(slug="entry", title="Entry", author_name="C",
-                            excerpt="ex", body_md="# Hi\n\npara",
-                            published_at=datetime.utcnow()))
+        db.session.add(
+            Post(
+                slug="entry",
+                title="Entry",
+                author_name="C",
+                excerpt="ex",
+                body_md="# Hi\n\npara",
+                published_at=datetime.utcnow(),
+            )
+        )
         db.session.commit()
     r1 = client.get("/log")
     assert r1.status_code == 200 and b"Entry" in r1.data
@@ -56,9 +70,18 @@ def test_log_detail_404s_for_draft(client, app):
 
 def test_manifest_lists_upcoming(client, app):
     from app.models import TourDate
+
     with app.app_context():
-        db.session.add(TourDate(event_name="Renfest", venue="V", city="C", state="CA",
-                                starts_at=datetime.utcnow().replace(year=2099), status="confirmed"))
+        db.session.add(
+            TourDate(
+                event_name="Renfest",
+                venue="V",
+                city="C",
+                state="CA",
+                starts_at=datetime.utcnow().replace(year=2099),
+                status="confirmed",
+            )
+        )
         db.session.commit()
     r = client.get("/manifest")
     assert r.status_code == 200 and b"Renfest" in r.data
@@ -66,10 +89,21 @@ def test_manifest_lists_upcoming(client, app):
 
 def test_crew_page_renders(client, app):
     from app.models import CrewMember
+
     with app.app_context():
-        db.session.add(CrewMember(slug="siren", name="THE SIREN", role="Fiddle",
-                                  portrait_url="", quote="x", entry_no="002",
-                                  tilt="left", accent="white", sort_order=0))
+        db.session.add(
+            CrewMember(
+                slug="siren",
+                name="THE SIREN",
+                role="Fiddle",
+                portrait_url="",
+                quote="x",
+                entry_no="002",
+                tilt="left",
+                accent="white",
+                sort_order=0,
+            )
+        )
         db.session.commit()
     r = client.get("/crew")
     assert r.status_code == 200 and b"THE SIREN" in r.data
@@ -77,10 +111,19 @@ def test_crew_page_renders(client, app):
 
 def test_booty_renders(client, app):
     from app.models import MerchItem, MusicTrack
+
     with app.app_context():
         db.session.add(MusicTrack(title="Heave Ho", sort_order=0))
-        db.session.add(MerchItem(name="Tee", description="", image_url="",
-                                 price_display="$25", external_url="https://x", sort_order=0))
+        db.session.add(
+            MerchItem(
+                name="Tee",
+                description="",
+                image_url="",
+                price_display="$25",
+                external_url="https://x",
+                sort_order=0,
+            )
+        )
         db.session.commit()
     r = client.get("/booty")
     assert r.status_code == 200 and b"Heave Ho" in r.data and b"Tee" in r.data
@@ -88,11 +131,20 @@ def test_booty_renders(client, app):
 
 def test_gallery_index_and_detail(client, app):
     from app.models import Gallery, GalleryImage
+
     with app.app_context():
         g = Gallery(slug="g1", title="Gigs", description="", cover_image_url="", sort_order=0)
-        db.session.add(g); db.session.commit()
-        db.session.add(GalleryImage(gallery_id=g.id, image_url="https://x/y.jpg",
-                                    caption="c", alt_text="a", sort_order=0))
+        db.session.add(g)
+        db.session.commit()
+        db.session.add(
+            GalleryImage(
+                gallery_id=g.id,
+                image_url="https://x/y.jpg",
+                caption="c",
+                alt_text="a",
+                sort_order=0,
+            )
+        )
         db.session.commit()
     r1 = client.get("/gallery")
     assert r1.status_code == 200 and b"Gigs" in r1.data

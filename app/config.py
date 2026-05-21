@@ -38,7 +38,8 @@ def _bool(name: str, default: bool = False) -> bool:
 
 def load_config(name: str = "production") -> Config:
     return Config(
-        SECRET_KEY=_env("SECRET_KEY") or ("dev" if name != "production" else _require("SECRET_KEY")),
+        SECRET_KEY=_env("SECRET_KEY")
+        or ("dev" if name != "production" else _require("SECRET_KEY")),
         SQLALCHEMY_DATABASE_URI=_env("DATABASE_URL", "sqlite:///grogblossoms.db"),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         OIDC_CLIENT_ID=_env("OIDC_CLIENT_ID"),

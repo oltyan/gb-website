@@ -1,8 +1,10 @@
-from datetime import datetime, timezone
-from flask import Response, render_template, request, url_for
-from feedgen.feed import FeedGenerator
+from datetime import UTC, datetime
 
-from app.models import Post, Gallery, TourDate
+from feedgen.feed import FeedGenerator
+from flask import Response, render_template, url_for
+
+from app.models import Gallery, Post
+
 from . import bp
 
 
@@ -14,17 +16,20 @@ def feed():
     fg.link(href=url_for("public.feed", _external=True), rel="self")
     fg.description("Dispatches from the Quarterdeck.")
     fg.language("en")
-    posts = (Post.query
-             .filter(Post.published_at.isnot(None))
-             .filter(Post.published_at <= datetime.utcnow())
-             .order_by(Post.published_at.desc()).limit(50).all())
+    posts = (
+        Post.query.filter(Post.published_at.isnot(None))
+        .filter(Post.published_at <= datetime.utcnow())
+        .order_by(Post.published_at.desc())
+        .limit(50)
+        .all()
+    )
     for p in posts:
         fe = fg.add_entry()
         fe.id(url_for("public.log_detail", slug=p.slug, _external=True))
         fe.link(href=url_for("public.log_detail", slug=p.slug, _external=True))
         fe.title(p.title)
         fe.description(p.excerpt or "")
-        fe.pubDate(p.published_at.replace(tzinfo=timezone.utc))
+        fe.pubDate(p.published_at.replace(tzinfo=UTC))
     return Response(fg.rss_str(pretty=True), mimetype="application/rss+xml")
 
 
@@ -50,6 +55,7 @@ def sitemap():
 
 @bp.get("/robots.txt")
 def robots():
-    return Response(render_template("public/robots.txt",
-                                    sitemap_url=url_for("public.sitemap", _external=True)),
-                    mimetype="text/plain")
+    return Response(
+        render_template("public/robots.txt", sitemap_url=url_for("public.sitemap", _external=True)),
+        mimetype="text/plain",
+    )

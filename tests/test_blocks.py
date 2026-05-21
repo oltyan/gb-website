@@ -1,11 +1,19 @@
 import pytest
+
 from app.services.blocks import BLOCK_TYPES, normalize_blocks, validate_block
 
 
 def test_known_block_types():
     assert set(BLOCK_TYPES) == {
-        "paragraph", "heading", "image", "pull_quote",
-        "gallery_inline", "divider", "callout", "stat_pair", "bento_card",
+        "paragraph",
+        "heading",
+        "image",
+        "pull_quote",
+        "gallery_inline",
+        "divider",
+        "callout",
+        "stat_pair",
+        "bento_card",
     }
 
 
@@ -52,19 +60,26 @@ def test_normalize_blocks_strict_raises():
 
 
 def test_render_post_with_blocks(client, app):
-    from app.extensions import db
-    from app.models import Post
     from datetime import datetime
 
+    from app.extensions import db
+    from app.models import Post
+
     with app.app_context():
-        p = Post(slug="blocky", title="Blocky", author_name="C",
-                 excerpt="", published_at=datetime.utcnow(),
-                 blocks=[
-                     {"id": "1", "type": "paragraph", "data": {"markdown": "Hello ==world==."}},
-                     {"id": "2", "type": "heading", "data": {"level": 2, "text": "A heading"}},
-                     {"id": "3", "type": "pull_quote", "data": {"text": "yo", "style": "amber-bar"}},
-                 ])
-        db.session.add(p); db.session.commit()
+        p = Post(
+            slug="blocky",
+            title="Blocky",
+            author_name="C",
+            excerpt="",
+            published_at=datetime.utcnow(),
+            blocks=[
+                {"id": "1", "type": "paragraph", "data": {"markdown": "Hello ==world==."}},
+                {"id": "2", "type": "heading", "data": {"level": 2, "text": "A heading"}},
+                {"id": "3", "type": "pull_quote", "data": {"text": "yo", "style": "amber-bar"}},
+            ],
+        )
+        db.session.add(p)
+        db.session.commit()
     r = client.get("/log/blocky")
     assert r.status_code == 200
     body = r.data.decode()

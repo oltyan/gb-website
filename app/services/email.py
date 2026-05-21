@@ -1,4 +1,5 @@
 """SMTP email sender. Single outbound path: inquiry notification."""
+
 from __future__ import annotations
 
 import logging
@@ -44,9 +45,13 @@ def _format_body(inq: Inquiry) -> str:
         f"Kind:     {inq.kind}",
         f"From:     {inq.from_name} <{inq.email}>",
     ]
-    if inq.phone: lines.append(f"Phone:    {inq.phone}")
-    if inq.event_date: lines.append(f"Event:    {inq.event_date}")
-    if inq.venue: lines.append(f"Venue:    {inq.venue}")
-    if inq.city: lines.append(f"City:     {inq.city}")
+    if inq.phone:
+        lines.append(f"Phone:    {inq.phone}")
+    if inq.event_date:
+        lines.append(f"Event:    {inq.event_date}")
+    if inq.venue:
+        lines.append(f"Venue:    {inq.venue}")
+    if inq.city:
+        lines.append(f"City:     {inq.city}")
     lines += ["", "Message:", "--------", inq.message, "", f"Admin: {link}"]
     return "\n".join(lines)

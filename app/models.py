@@ -1,12 +1,22 @@
 """SQLAlchemy 2.0 typed declarative models."""
+
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import date, datetime
 
 from flask_login import UserMixin
-from sqlalchemy import DateTime, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .extensions import db
 
@@ -37,13 +47,6 @@ class User(UserMixin, db.Model):
         return name in self.groups
 
 
-from datetime import datetime, date
-from sqlalchemy import (
-    Boolean, Date, DateTime, ForeignKey, Integer, JSON, String, Text,
-)
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-
 class Asset(db.Model):
     __tablename__ = "assets"
 
@@ -69,10 +72,14 @@ class Post(db.Model):
     author_name: Mapped[str] = mapped_column(String(255), default="The Crew")
     hero_image_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
     excerpt: Mapped[str] = mapped_column(Text, default="")
-    body_md: Mapped[str] = mapped_column(Text, default="")  # Phase 3 uses this; Phase 6 migrates to blocks
+    body_md: Mapped[str] = mapped_column(
+        Text, default=""
+    )  # Phase 3 uses this; Phase 6 migrates to blocks
     blocks: Mapped[list] = mapped_column(JSON, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     def is_live(self) -> bool:
         return self.published_at is not None and self.published_at <= datetime.utcnow()
@@ -89,7 +96,7 @@ class CrewMember(db.Model):
     quote: Mapped[str] = mapped_column(Text, default="")
     bio: Mapped[str] = mapped_column(Text, default="")
     entry_no: Mapped[str] = mapped_column(String(16), default="")
-    tilt: Mapped[str] = mapped_column(String(8), default="left")   # 'left' | 'right'
+    tilt: Mapped[str] = mapped_column(String(8), default="left")  # 'left' | 'right'
     accent: Mapped[str] = mapped_column(String(8), default="white")  # 'white' | 'amber' | 'red'
     sort_order: Mapped[int] = mapped_column(Integer, default=0, index=True)
 
@@ -105,7 +112,9 @@ class TourDate(db.Model):
     starts_at: Mapped[datetime] = mapped_column(DateTime, index=True)
     ends_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     ticket_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
-    status: Mapped[str] = mapped_column(String(16), default="confirmed", index=True)  # confirmed|tentative|past
+    status: Mapped[str] = mapped_column(
+        String(16), default="confirmed", index=True
+    )  # confirmed|tentative|past
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
@@ -120,7 +129,7 @@ class Gallery(db.Model):
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    images: Mapped[list["GalleryImage"]] = relationship(
+    images: Mapped[list[GalleryImage]] = relationship(
         back_populates="gallery",
         cascade="all, delete-orphan",
         order_by="GalleryImage.sort_order",
@@ -137,7 +146,7 @@ class GalleryImage(db.Model):
     alt_text: Mapped[str] = mapped_column(String(512), default="")
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
-    gallery: Mapped["Gallery"] = relationship(back_populates="images")
+    gallery: Mapped[Gallery] = relationship(back_populates="images")
 
 
 class MusicTrack(db.Model):
@@ -220,12 +229,14 @@ class SiteSettings(db.Model):
     logo_url: Mapped[str] = mapped_column(String(1024), default="")
     contact_email: Mapped[str] = mapped_column(String(255), default="")
     social_links: Mapped[list] = mapped_column(JSON, default=list)
-    footer_text: Mapped[str] = mapped_column(Text, default="© 2026 THE GROG BLOSSOMS. NO QUARTER GIVEN.")
+    footer_text: Mapped[str] = mapped_column(
+        Text, default="© 2026 THE GROG BLOSSOMS. NO QUARTER GIVEN."
+    )
     ports_visited: Mapped[int] = mapped_column(Integer, default=0)
     grog_pints: Mapped[str] = mapped_column(String(32), default="0")
 
     @classmethod
-    def get_or_create(cls) -> "SiteSettings":
+    def get_or_create(cls) -> SiteSettings:
         instance = db.session.get(cls, 1)
         if instance is None:
             instance = cls(id=1)

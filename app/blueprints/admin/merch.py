@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, IntegerField, StringField, TextAreaField
-from wtforms.validators import DataRequired, Optional, URL
+from wtforms.validators import URL, DataRequired, Optional
 
 from app.models import MerchItem
+
 from . import bp
 from ._crud import register_crud
 
@@ -18,8 +19,11 @@ class MerchItemForm(FlaskForm):
 
 
 register_crud(
-    bp, prefix="merch", label="Merch Item",
-    model=MerchItem, form_cls=MerchItemForm,
+    bp,
+    prefix="merch",
+    label="Merch Item",
+    model=MerchItem,
+    form_cls=MerchItemForm,
     list_cols=[
         ("Name", lambda m: m.name),
         ("Price", lambda m: m.price_display),

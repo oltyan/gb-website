@@ -12,8 +12,7 @@ from app.services.storage import (
 
 
 def _auth():
-    return AuthContext(email="admin@example.test", user="admin",
-                       groups=["gb-developer"])
+    return AuthContext(email="admin@example.test", user="admin", groups=["gb-developer"])
 
 
 def _client():

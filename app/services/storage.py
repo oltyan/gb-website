@@ -8,6 +8,7 @@ mm-mycelium-gateway injects upstream — the sidecar isn't reachable from
 outside the shared-tunnel Docker network, so the network is the trust
 boundary.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -72,9 +73,7 @@ class SporeklesClient:
         headers = self._get_auth().headers()
 
         try:
-            resp = self._session.post(
-                url, files=files, headers=headers, timeout=self._timeout
-            )
+            resp = self._session.post(url, files=files, headers=headers, timeout=self._timeout)
         except requests.RequestException as exc:
             raise SporeklesError(f"sporekles unreachable: {exc}") from exc
 
