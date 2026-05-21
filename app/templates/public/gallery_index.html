@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Galleries — The Grog Blossoms{% endblock %}
+{% block content %}
+<section class="px-6 py-12 max-w-6xl mx-auto">
+  <h1 class="font-hand text-5xl mb-8 sketch-underline inline-block">Galleries</h1>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {% for g in galleries %}
+    <a href="{{ url_for('public.gallery_detail', slug=g.slug) }}" class="block group">
+      <div class="noir-frame bg-surface p-1 sketch-border {% if loop.index is odd %}-rotate-1{% else %}rotate-1{% endif %}">
+        {% if g.cover_image_url %}
+        <img src="{{ g.cover_image_url }}" alt="" class="w-full h-48 object-cover grayscale group-hover:grayscale-0 transition">
+        {% else %}
+        <div class="w-full h-48 bg-surface-container-high"></div>
+        {% endif %}
+      </div>
+      <h2 class="font-hand text-2xl mt-3 sketch-underline inline-block">{{ g.title }}</h2>
+      <p class="text-sm text-white/60">{{ g.images|length }} images</p>
+    </a>
+    {% else %}
+    <div class="col-span-3 text-white/40 text-center">No galleries yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -84,3 +84,17 @@ def test_booty_renders(client, app):
         db.session.commit()
     r = client.get("/booty")
     assert r.status_code == 200 and b"Heave Ho" in r.data and b"Tee" in r.data
+
+
+def test_gallery_index_and_detail(client, app):
+    from app.models import Gallery, GalleryImage
+    with app.app_context():
+        g = Gallery(slug="g1", title="Gigs", description="", cover_image_url="", sort_order=0)
+        db.session.add(g); db.session.commit()
+        db.session.add(GalleryImage(gallery_id=g.id, image_url="https://x/y.jpg",
+                                    caption="c", alt_text="a", sort_order=0))
+        db.session.commit()
+    r1 = client.get("/gallery")
+    assert r1.status_code == 200 and b"Gigs" in r1.data
+    r2 = client.get("/gallery/g1")
+    assert r2.status_code == 200 and b"y.jpg" in r2.data

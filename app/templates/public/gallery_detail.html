@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ gallery.title }} — Gallery{% endblock %}
+{% block content %}
+<section class="px-6 py-12 max-w-6xl mx-auto">
+  <a href="{{ url_for('public.gallery_index') }}" class="font-mono text-xs uppercase text-white/60">← all galleries</a>
+  <h1 class="font-hand text-5xl my-4 sketch-underline inline-block">{{ gallery.title }}</h1>
+  {% if gallery.description %}<p class="max-w-2xl text-on-surface-variant mb-8">{{ gallery.description }}</p>{% endif %}
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for img in gallery.images %}
+    <button type="button"
+            class="block w-full noir-frame bg-surface p-1 sketch-border {% if loop.index is odd %}-rotate-1{% else %}rotate-1{% endif %}"
+            data-lightbox
+            data-src="{{ img.image_url }}"
+            data-caption="{{ img.caption }}">
+      <img src="{{ img.image_url }}" alt="{{ img.alt_text }}"
+           class="w-full aspect-[4/3] object-cover grayscale hover:grayscale-0 transition">
+    </button>
+    {% else %}
+    <div class="col-span-4 text-white/40 text-center py-12">Gallery is empty.</div>
+    {% endfor %}
+  </div>
+</section>
+
+<div id="lightbox" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6" onclick="this.classList.add('hidden')">
+  <figure class="max-w-5xl">
+    <img id="lightbox-img" class="max-h-[80vh] max-w-full">
+    <figcaption id="lightbox-cap" class="text-white/70 font-mono text-sm mt-3 text-center"></figcaption>
+  </figure>
+</div>
+
+<script>
+document.querySelectorAll('[data-lightbox]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('lightbox-img').src = btn.dataset.src;
+    document.getElementById('lightbox-cap').textContent = btn.dataset.caption || '';
+    document.getElementById('lightbox').classList.remove('hidden');
+  });
+});
+</script>
+{% endblock %}
