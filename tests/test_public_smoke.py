@@ -73,3 +73,14 @@ def test_crew_page_renders(client, app):
         db.session.commit()
     r = client.get("/crew")
     assert r.status_code == 200 and b"THE SIREN" in r.data
+
+
+def test_booty_renders(client, app):
+    from app.models import MerchItem, MusicTrack
+    with app.app_context():
+        db.session.add(MusicTrack(title="Heave Ho", sort_order=0))
+        db.session.add(MerchItem(name="Tee", description="", image_url="",
+                                 price_display="$25", external_url="https://x", sort_order=0))
+        db.session.commit()
+    r = client.get("/booty")
+    assert r.status_code == 200 and b"Heave Ho" in r.data and b"Tee" in r.data
