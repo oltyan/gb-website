@@ -13,13 +13,18 @@
 //   gb-website-secret-key        — Flask SECRET_KEY (string)
 //   gb-website-oidc-client-id    — FA OIDC client ID (string)
 //   gb-website-oidc-client-secret — FA OIDC client secret (string)
-//   gb-website-smtp              — Fastmail SMTP (usernamePassword:
-//                                   username -> SMTP_USER,
-//                                   password -> SMTP_PASSWORD)
+//
+// gb-website-smtp (Fastmail) is deferred — Fastmail account not yet
+// provisioned. app/services/email.py early-returns when SMTP_HOST is
+// unset, so inquiries still persist to the DB; they just don't trigger
+// a notification email. When ready, add the usernamePassword block to
+// withCredentials below + SMTP_HOST / SMTP_PORT / SMTP_USER /
+// SMTP_PASSWORD lines to the heredoc, and add the matching block to
+// mm-jenkins/jenkins.yaml + .env.example + docker-compose.yml.
 //
 // Non-secret config (OIDC discovery URL, sporekles API base, CDN base,
-// SMTP host/port/from, contact email, tenant) is inlined in the
-// secrets.env heredoc below — no value in routing through Jenkins.
+// SMTP from, contact email, tenant) is inlined in the secrets.env
+// heredoc below — no value in routing through Jenkins.
 
 pipeline {
     agent any
@@ -59,11 +64,19 @@ pipeline {
 
         stage('Deploy') {
             steps {
+                // SMTP credentials deferred — Fastmail account not yet
+                // provisioned. app/services/email.py early-returns when
+                // SMTP_HOST is unset, so contact-form inquiries still
+                // persist to the DB; they just don't trigger a notification
+                // email. Re-add `usernamePassword(credentialsId:
+                // 'gb-website-smtp', ...)` + the matching SMTP_HOST /
+                // SMTP_PORT / SMTP_USER / SMTP_PASSWORD lines in the
+                // heredoc when ready. Companion JCasC block is documented
+                // in mm-jenkins/jenkins.yaml comment.
                 withCredentials([
                     string(credentialsId: 'gb-website-secret-key',          variable: 'SECRET_KEY'),
                     string(credentialsId: 'gb-website-oidc-client-id',      variable: 'OIDC_CLIENT_ID'),
                     string(credentialsId: 'gb-website-oidc-client-secret',  variable: 'OIDC_CLIENT_SECRET'),
-                    usernamePassword(credentialsId: 'gb-website-smtp',      usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASSWORD'),
                 ]) {
                     sh '''
                         set -eu
@@ -80,10 +93,6 @@ OIDC_GROUP_REQUIRED=gb-developer
 CDN_BASE_URL=https://design-assets.grogblossoms.com/
 SPOREKLES_API_BASE=http://mm-sporekles-api:3000
 SPOREKLES_TENANT=gb
-SMTP_HOST=smtp.fastmail.com
-SMTP_PORT=587
-SMTP_USER=$SMTP_USER
-SMTP_PASSWORD=$SMTP_PASSWORD
 SMTP_FROM=no-reply@grogblossoms.com
 CONTACT_EMAIL=chris@grogblossoms.com
 EOF
