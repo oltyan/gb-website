@@ -516,5 +516,26 @@ explicitly an app-internal sporekles RBAC role, not an MM-tier group.
 `mycelium.musicalmycology.org/sporekles/` would need `mm-developer` on top.
 Out of scope for this site.)
 
+### Public ingress — corrected 2026-05-21
+
+The spec's DNS section described a dedicated Cloudflare Tunnel for
+gb-website with its own `cloudflared` container in docker-compose. **That
+violates the MM-org universal rule "Never run a second cloudflared or
+add a second Cloudflare API token — mm-homebody is the sole arbiter."**
+The corrected pattern:
+
+- gb-website joins the existing `shared-tunnel` Docker network and
+  declares its public hostname via `homebody.*` labels on the app
+  container. mm-homebody renders the cloudflared ingress entry and
+  pushes it to the shared mm tunnel via CF API.
+- gb-website's stack has **no** `cloudflared` service and **no**
+  `CF_TUNNEL_TOKEN` secret. Those moved to mm-homebody.
+- `grogblossoms.com` lives in Route 53, so mm-homebody's CF-DNS step
+  is a no-op for this zone — DNS records are created manually in
+  Route 53 as CNAMEs to `<tunnel-uuid>.cfargotunnel.com`.
+- Prerequisite: `grogblossoms.com` must be added to
+  `mm-homebody/rules.yml` `allowed_zones` before mm-homebody will
+  accept this container's registration.
+
 See `app/services/storage.py::SporeklesClient` and `docs/runbook-deploy.md`.
 
