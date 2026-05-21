@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Inquiry — Admin{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.inquiries_list') }}" class="text-xs uppercase text-white/60">← back to inbox</a>
+<h1 class="text-3xl mt-2 mb-6">{{ inq.kind|upper }} — {{ inq.from_name }}</h1>
+
+<dl class="grid grid-cols-[10rem_1fr] gap-y-2 max-w-3xl mb-8 text-sm">
+  <dt class="text-white/60">Email</dt><dd>{{ inq.email }}</dd>
+  {% if inq.phone %}<dt class="text-white/60">Phone</dt><dd>{{ inq.phone }}</dd>{% endif %}
+  {% if inq.event_date %}<dt class="text-white/60">Event date</dt><dd>{{ inq.event_date }}</dd>{% endif %}
+  {% if inq.venue %}<dt class="text-white/60">Venue</dt><dd>{{ inq.venue }}</dd>{% endif %}
+  {% if inq.city %}<dt class="text-white/60">City</dt><dd>{{ inq.city }}</dd>{% endif %}
+  <dt class="text-white/60">Status</dt><dd>{{ inq.status }}</dd>
+  <dt class="text-white/60">Received</dt><dd>{{ inq.created_at.strftime('%Y-%m-%d %H:%M') }}</dd>
+</dl>
+
+<div class="whitespace-pre-wrap border border-white/20 p-4 max-w-3xl mb-6">{{ inq.message }}</div>
+
+<form method="post" action="{{ url_for('admin.inquiries_status', id=inq.id) }}" class="flex gap-2">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% for s in ['new', 'replied', 'archived'] %}
+  <button name="status" value="{{ s }}" class="px-3 py-1 border border-white/40 text-xs uppercase {% if inq.status == s %}bg-white text-black{% endif %}">{{ s }}</button>
+  {% endfor %}
+</form>
+{% endblock %}

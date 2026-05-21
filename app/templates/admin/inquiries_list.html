@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Inquiries — Admin{% endblock %}
+{% block content %}
+<h1 class="text-3xl mb-6">Inquiries</h1>
+<table class="w-full">
+  <thead class="border-b border-white/20">
+    <tr><th class="py-2 px-3 text-left text-xs uppercase">When</th>
+        <th class="text-left text-xs uppercase">Kind</th>
+        <th class="text-left text-xs uppercase">From</th>
+        <th class="text-left text-xs uppercase">Status</th></tr>
+  </thead>
+  <tbody>
+  {% for inq in items %}
+    <tr class="border-b border-white/10 hover:bg-white/5">
+      <td class="py-3 px-3"><a href="{{ url_for('admin.inquiries_detail', id=inq.id) }}">{{ inq.created_at.strftime('%Y-%m-%d %H:%M') }}</a></td>
+      <td class="px-3">{{ inq.kind }}</td>
+      <td class="px-3">{{ inq.from_name }} <span class="text-white/40">&lt;{{ inq.email }}&gt;</span></td>
+      <td class="px-3">{{ inq.status }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="4" class="py-8 text-center text-white/40">Empty inbox.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

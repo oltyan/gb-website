@@ -79,3 +79,32 @@ def test_admin_new_route_renders(client, app, prefix):
     _login_as_admin(client, app)
     response = client.get(f"/admin/{prefix}/new")
     assert response.status_code == 200
+
+
+def test_inquiries_inbox_renders(client, app):
+    with app.app_context():
+        from app.models import Inquiry
+        from app.extensions import db
+        i = Inquiry(kind="booking", from_name="A", email="a@b", message="hello")
+        db.session.add(i); db.session.commit()
+    _login_as_admin(client, app)
+    r = client.get("/admin/inquiries/")
+    assert r.status_code == 200
+    assert b"booking" in r.data or b"BOOKING" in r.data
+
+
+def test_inquiry_status_update(client, app):
+    with app.app_context():
+        from app.models import Inquiry
+        from app.extensions import db
+        i = Inquiry(kind="general", from_name="A", email="a@b", message="x")
+        db.session.add(i); db.session.commit()
+        iid = i.id
+    _login_as_admin(client, app)
+    r = client.post(f"/admin/inquiries/{iid}/status",
+                    data={"status": "replied"}, follow_redirects=True)
+    assert r.status_code == 200
+    with app.app_context():
+        from app.models import Inquiry
+        from app.extensions import db
+        assert db.session.get(Inquiry, iid).status == "replied"
