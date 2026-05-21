@@ -1,0 +1,5 @@
+# Copy to docker-compose.override.yml for local-on-mycelium debugging
+services:
+  app:
+    ports:
+      - "8000:8000"
