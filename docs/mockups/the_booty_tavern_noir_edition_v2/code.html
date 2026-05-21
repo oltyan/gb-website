@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOOTY! | THE GROG BLOSSOMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Geist:wght@400;700&amp;family=Coming+Soon&amp;family=Gaegu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .grain-overlay {
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBWX_4DgK8of7NHZYe9fLa1fmB49ZGW0U9JGotR9z8yBlq9IYwlRgr3e7PW55lH5cGN9rIb-DfjwKVEulQd99AT1cqInU8ALpuzW2JonfCBp5LlH0gXmbJGtxbenUChZCGVhbbn1Ih_bSQZT7AIhIhZ-P7n0DTQL2tXm1tJ7BlbfcauuOWVX39fy5xaoOpgPhHFJhxq2aLjVEBw6DYM7IupWZuydAVXvQT7vWhsYHsoruAG60zlIN9YiebR7h-fqdz_UPPpeaByjys);
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            background: url("https://www.transparenttextures.com/patterns/stardust.png");
+            z-index: 9999;
+        }
+
+        .noir-frame {
+            border: 4px solid #fff;
+            box-shadow: 8px 8px 0 0 #000;
+        }
+
+        .sketch-border {
+            border: 2px solid currentColor;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+        }
+        
+        .sketch-underline {
+            background-image: linear-gradient(120deg, #A62116 0%, #A62116 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+        }
+
+        .jaunty-angle {
+            transform: rotate(-3deg);
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffb4ab;
+            border-radius: 50%;
+            animation: explode 1s ease-out infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#b7b5b4",
+                        "background": "#131313",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline-variant": "#444748",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "surface-dim": "#131313",
+                        "tertiary-fixed-dim": "#c8c6c6",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-fixed-variant": "#474746",
+                        "primary-container": "#e2e2e2",
+                        "tertiary": "#ffffff",
+                        "on-primary": "#2f3131",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#474746",
+                        "surface-tint": "#c6c6c7",
+                        "tertiary-container": "#e4e2e1",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "surface-container-highest": "#353535",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-container": "#656464",
+                        "on-primary-fixed-variant": "#454747",
+                        "tertiary-fixed": "#e4e2e1",
+                        "primary-fixed": "#e2e2e2",
+                        "on-secondary": "#313030",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-primary-container": "#636565",
+                        "on-error": "#690005",
+                        "outline": "#8e9192",
+                        "on-background": "#e2e2e2",
+                        "surface-container-low": "#1b1b1b",
+                        "surface-variant": "#353535",
+                        "surface-container": "#1f1f1f",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-surface-variant": "#c4c7c8",
+                        "inverse-primary": "#5d5f5f",
+                        "inverse-surface": "#e2e2e2",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#e2e2e2",
+                        "secondary": "#c8c6c5",
+                        "surface": "#131313",
+                        "primary": "#ffffff",
+                        "inverse-on-surface": "#303030",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary": "#303030",
+                        "surface-bright": "#393939",
+                        "accent-red": "#A62116",
+                        "accent-amber": "#C49A4D"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-sm": "1rem",
+                        "margin-lg": "4rem",
+                        "gutter": "1.5rem",
+                        "unit": "4px",
+                        "margin-md": "2rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Geist"],
+                        "headline-md": ["Bricolage Grotesque"],
+                        "headline-lg": ["Bricolage Grotesque"],
+                        "body-md": ["Geist"],
+                        "headline-lg-mobile": ["Bricolage Grotesque"],
+                        "label-sm": ["JetBrains Mono"],
+                        "display-lg": ["Bricolage Grotesque"],
+                        "hand": ["Gaegu"],
+                        "script": ["Coming Soon"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background selection:bg-accent-red selection:text-white overflow-x-hidden font-body-md">
+<div class="fixed inset-0 grain-overlay z-50"></div>
+<div class="noise-overlay"></div>
+<!-- Header Navigation -->
+<header class="flex justify-between items-center w-full px-gutter py-4 bg-background border-b-4 border-primary sticky top-0 z-[60]">
+<div class="flex items-center gap-4">
+<img alt="The Grog Blossoms Logo" class="h-14 w-14 object-contain rounded-full border-2 border-accent-amber bg-surface p-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGawyv5PqdTFD_-mowRD4nUNcZ9aMNpAQ_PoZkCzHgVReIGL87i8rA0FREZuS3PWnRffKEo4HXt8R9frR_Z3lRAVEdohP6ulCqfGTBRZwOSFYehCmciZLAdI3sacXdoC9HRam-aFSoCoNHuPXLIk2Z6KO0w-AG1hpIieQF_1AOUafoiLBNV_MF-rQSVfkJM8loHc0qhbM_9TO4c_5SDsjsySHyT-TTRh8SamoVxF6rqCRm3PLq0lqkTU7ZaJQzaWy4jK7_tPuECGE"/>
+<div class="font-hand text-3xl font-bold tracking-tight text-primary uppercase">THE GROG BLOSSOMS</div>
+</div>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant hover:text-accent-amber transition-colors font-label-sm uppercase" href="#">Ship's Log</a>
+<a class="text-on-surface-variant hover:text-accent-amber transition-colors font-label-sm uppercase" href="#">Manifest</a>
+<a class="text-accent-red border-b-2 border-accent-red pb-1 font-label-sm uppercase" href="#">Booty!</a>
+<a class="text-on-surface-variant hover:text-accent-amber transition-colors font-label-sm uppercase" href="#">Crew</a>
+</nav>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:text-accent-red transition-colors p-1" data-icon="skull">skull</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:text-accent-amber transition-colors p-1" data-icon="anchor">anchor</span>
+</div>
+</header>
+<main class="min-h-screen pb-20">
+<!-- Hero Section -->
+<section class="relative h-[60vh] flex flex-col items-center justify-center text-center px-gutter overflow-hidden">
+<!-- Scribble Accents -->
+<div class="absolute top-10 left-10 opacity-40 pointer-events-none select-none">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 0, 'wght' 100;">draw</span>
+</div>
+<div class="relative z-10 jaunty-angle">
+<div class="absolute -top-12 -right-12 w-24 h-24">
+<div class="firework" style="top: 20%; left: 30%; animation-delay: 0.1s; background: #ffb4ab;"></div>
+<div class="firework" style="top: 60%; left: 70%; animation-delay: 0.5s; background: #e2e2e2;"></div>
+<div class="firework" style="top: 80%; left: 10%; animation-delay: 0.8s; background: #C49A4D;"></div>
+<div class="firework" style="top: 30%; left: 80%; animation-delay: 0.3s; background: #A62116;"></div>
+</div>
+<h1 class="text-display-lg tracking-tight leading-none mb-4 uppercase drop-shadow-[4px_4px_0px_rgba(166,33,22,0.3)] font-hand">
+                    Enjoy our amazing <br/><span class="underline decoration-wavy decoration-accent-red">Booty!</span>
+</h1>
+<p class="font-hand text-2xl italic opacity-80 max-w-lg mx-auto text-accent-amber">Treasures plundered from the high seas, now for sale in the Smuggler's Crate.</p>
+<div class="mt-8 flex justify-center gap-4">
+<div class="material-symbols-outlined animate-bounce text-4xl text-accent-red" data-icon="south">south</div>
+</div>
+</div>
+<!-- Background Texture Arrows -->
+<div class="absolute bottom-10 right-20 opacity-20 rotate-12">
+<span class="material-symbols-outlined text-[200px]" data-icon="trending_flat">trending_flat</span>
+</div>
+</section>
+<!-- Shop Section: The Smuggler's Crate -->
+<section class="max-w-7xl mx-auto px-gutter py-margin-lg border-t-2 border-dashed border-accent-amber">
+<div class="flex flex-col md:flex-row justify-between items-baseline mb-12">
+<h2 class="font-hand text-5xl md:text-6xl text-primary sketch-underline inline-block">The Smuggler's Crate</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant italic mt-4 md:mt-0">Plunder available until sunrise.</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Product Card 1 -->
+<div class="noir-frame bg-surface p-6 group cursor-pointer transition-transform hover:-translate-y-2 sketch-border">
+<div class="aspect-square bg-surface-container-highest mb-6 overflow-hidden relative border-2 border-primary">
+<div class="w-full h-full border-4 border-dashed border-primary flex items-center justify-center p-4">
+<p class="font-hand text-2xl text-center text-on-surface opacity-60">[ SKETCH OF VESSEL TEE ]</p>
+</div>
+<div class="absolute top-2 left-2 bg-accent-red text-white px-3 py-1 font-label-sm text-label-sm uppercase font-bold skew-1">Sold Out</div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-hand text-3xl uppercase text-primary">Vessel Tee</h3>
+<p class="font-label-sm text-label-sm opacity-60 uppercase">100% Cotton Grit</p>
+</div>
+<div class="font-hand text-3xl text-accent-amber">35.00</div>
+</div>
+<div class="mt-6 border-t-2 border-primary border-dotted pt-4 flex justify-between items-center group-hover:translate-x-1 transition-transform">
+<span class="font-hand text-xl font-bold uppercase tracking-widest text-accent-red">Plunder Now</span>
+<span class="material-symbols-outlined text-accent-red" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="noir-frame bg-surface p-6 group cursor-pointer transition-transform hover:rotate-1 sketch-border border-accent-amber">
+<div class="aspect-square bg-surface-container-highest mb-6 overflow-hidden relative border-2 border-primary">
+<div class="w-full h-full border-4 border-dashed border-primary flex items-center justify-center p-4">
+<p class="font-hand text-2xl text-center text-on-surface opacity-60">[ SKETCH OF VINYL LP ]</p>
+</div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-hand text-3xl uppercase text-primary">The First Voyage LP</h3>
+<p class="font-label-sm text-label-sm opacity-60 uppercase">Heavyweight Black Wax</p>
+</div>
+<div class="font-hand text-3xl text-accent-amber">45.00</div>
+</div>
+<div class="mt-6 border-t-2 border-primary border-dotted pt-4 flex justify-between items-center group-hover:translate-x-1 transition-transform">
+<span class="font-hand text-xl font-bold uppercase tracking-widest text-accent-red">Plunder Now</span>
+<span class="material-symbols-outlined text-accent-red" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="noir-frame bg-surface p-6 group cursor-pointer transition-transform hover:-rotate-1 sketch-border">
+<div class="aspect-square bg-surface-container-highest mb-6 overflow-hidden relative border-2 border-primary">
+<div class="w-full h-full border-4 border-dashed border-primary flex items-center justify-center p-4">
+<p class="font-hand text-2xl text-center text-on-surface opacity-60">[ SKETCH OF GROG MUG ]</p>
+</div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-hand text-3xl uppercase text-primary">The Grog Mug</h3>
+<p class="font-label-sm text-label-sm opacity-60 uppercase">Forged in Clay</p>
+</div>
+<div class="font-hand text-3xl text-accent-amber">28.00</div>
+</div>
+<div class="mt-6 border-t-2 border-primary border-dotted pt-4 flex justify-between items-center group-hover:translate-x-1 transition-transform">
+<span class="font-hand text-xl font-bold uppercase tracking-widest text-accent-red">Plunder Now</span>
+<span class="material-symbols-outlined text-accent-red" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Gallery Section -->
+<section class="bg-surface-container-lowest py-margin-lg border-y-4 border-accent-amber">
+<div class="px-gutter max-w-7xl mx-auto">
+<div class="text-center mb-12">
+<h2 class="font-hand text-5xl md:text-6xl mb-4 text-primary">The Gallery</h2>
+<div class="h-1 w-32 bg-accent-red mx-auto sketch-border"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="noir-frame bg-surface p-2 sketch-border aspect-square flex items-center justify-center group cursor-pointer overflow-hidden">
+<div class="w-full h-full border-2 border-dashed border-primary/20 flex flex-col items-center justify-center transition-all group-hover:bg-primary/5">
+<span class="material-symbols-outlined text-6xl text-primary/20 mb-4" data-icon="image">image</span>
+<span class="font-hand text-xl text-primary/30 uppercase">Photo Captured</span>
+</div>
+</div>
+<div class="noir-frame bg-surface p-2 sketch-border aspect-square flex items-center justify-center group cursor-pointer overflow-hidden border-accent-amber">
+<div class="w-full h-full border-2 border-dashed border-accent-amber/20 flex flex-col items-center justify-center transition-all group-hover:bg-accent-amber/5">
+<span class="material-symbols-outlined text-6xl text-accent-amber/20 mb-4" data-icon="movie">movie</span>
+<span class="font-hand text-xl text-accent-amber/30 uppercase">Video Log</span>
+</div>
+</div>
+<div class="noir-frame bg-surface p-2 sketch-border aspect-square flex items-center justify-center group cursor-pointer overflow-hidden">
+<div class="w-full h-full border-2 border-dashed border-primary/20 flex flex-col items-center justify-center transition-all group-hover:bg-primary/5">
+<span class="material-symbols-outlined text-6xl text-primary/20 mb-4" data-icon="image">image</span>
+<span class="font-hand text-xl text-primary/30 uppercase">Photo Captured</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="max-w-4xl mx-auto px-gutter py-margin-lg text-center">
+<div class="noir-frame p-12 bg-surface-container relative sketch-border border-accent-amber">
+<div class="absolute -top-6 -left-6 bg-accent-red text-white font-hand text-2xl px-6 py-2 rotate-[-5deg] noir-frame sketch-border">WANTED</div>
+<h3 class="font-hand text-5xl text-primary mb-6">Need More Loot?</h3>
+<p class="font-hand text-2xl mb-8 max-w-lg mx-auto text-on-surface-variant">Sign your name to the Articles of War and never miss a shipment of grog or garments.</p>
+<div class="flex flex-col md:flex-row gap-4 justify-center">
+<input class="bg-background border-b-4 border-accent-amber border-t-0 border-x-0 focus:ring-0 font-hand text-2xl w-full md:w-80 px-4 py-3 placeholder:opacity-40" placeholder="YOUR PIRATE ALIAS..." type="text"/>
+<button class="bg-accent-red text-white font-hand text-3xl px-12 py-3 uppercase hover:scale-105 transition-transform active:rotate-1 shadow-[4px_4px_0px_0px_rgba(196,154,77,1)]">ENLIST</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-margin-md px-gutter flex flex-col md:flex-row justify-between items-center gap-4 border-t-2 border-dashed border-accent-amber bg-surface-container-lowest">
+<div class="font-hand text-xl text-accent-amber uppercase">© 1724 THE GROG BLOSSOMS. NO QUARTER GIVEN.</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant font-label-sm hover:text-accent-red transition-all" href="#">The Ledger</a>
+<a class="text-on-surface-variant font-label-sm hover:text-accent-red transition-all" href="#">Privacy</a>
+<a class="text-on-surface-variant font-label-sm hover:text-accent-red transition-all" href="#">Booking</a>
+</div>
+</footer>
+<!-- Mobile Navigation (Shell-like) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-background border-t-4 border-accent-amber py-2 px-2">
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2 scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-hand uppercase mt-1">LOG</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2 scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-hand uppercase mt-1">MANIFEST</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-accent-red text-white p-2 m-1 border-2 border-accent-red scale-90 transition-transform shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+<span class="material-symbols-outlined" data-icon="treasure_chest">treasure_chest</span>
+<span class="font-hand uppercase mt-1">BOOTY!</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2 scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-hand uppercase mt-1">CREW</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('button, a, .noir-frame').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = (el.style.transform || '') + ' scale(0.98)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = el.style.transform.replace(' scale(0.98)', '');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = el.style.transform.replace(' scale(0.98)', '');
+            });
+        });
+
+        // Click firework burst
+        document.addEventListener('mousedown', (e) => {
+            const burst = document.createElement('div');
+            burst.className = 'absolute z-[100]';
+            burst.style.left = e.pageX + 'px';
+            burst.style.top = e.pageY + 'px';
+            
+            for(let i=0; i<8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework';
+                particle.style.transform = `rotate(${i * 45}deg) translateY(-20px)`;
+                particle.style.background = Math.random() > 0.5 ? '#A62116' : '#C49A4D';
+                burst.appendChild(particle);
+            }
+            
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 1000);
+        });
+    </script>
+</body></html>

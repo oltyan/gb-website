@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>THE GROG BLOSSOMS - The Quarterdeck</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Geist:wght@400;500&amp;family=Coming+Soon&amp;family=Gaegu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-low": "#1b1b1b",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "surface-container": "#1f1f1f",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-primary-container": "#636565",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-variant": "#353535",
+                        "outline-variant": "#444748",
+                        "tertiary-fixed-dim": "#c8c6c6",
+                        "on-error": "#690005",
+                        "inverse-primary": "#5d5f5f",
+                        "tertiary-fixed": "#e4e2e1",
+                        "surface": "#131313",
+                        "on-primary": "#2f3131",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#c6c6c7",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-tertiary": "#303030",
+                        "surface-bright": "#393939",
+                        "secondary-container": "#474746",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#313030",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "secondary-fixed": "#e5e2e1",
+                        "inverse-surface": "#e2e2e2",
+                        "inverse-on-surface": "#303030",
+                        "tertiary": "#ffffff",
+                        "on-surface": "#e2e2e2",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-surface-variant": "#c4c7c8",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "primary-fixed": "#e2e2e2",
+                        "primary-container": "#e2e2e2",
+                        "surface-container-highest": "#353535",
+                        "tertiary-container": "#e4e2e1",
+                        "on-tertiary-container": "#656464",
+                        "background": "#131313",
+                        "secondary": "#c8c6c5",
+                        "outline": "#8e9192",
+                        "primary": "#ffffff",
+                        "surface-dim": "#131313",
+                        "accent-red": "#A62116",
+                        "accent-amber": "#C49A4D"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "gutter": "1.5rem",
+                        "margin-sm": "1rem",
+                        "margin-lg": "4rem",
+                        "margin-md": "2rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Bricolage Grotesque"],
+                        "headline-lg-mobile": ["Bricolage Grotesque"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Bricolage Grotesque"],
+                        "body-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "display-lg": ["Bricolage Grotesque"],
+                        "script": ["Coming Soon"],
+                        "hand": ["Gaegu"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+        }
+        .grain-overlay {
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBWX_4DgK8of7NHZYe9fLa1fmB49ZGW0U9JGotR9z8yBlq9IYwlRgr3e7PW55lH5cGN9rIb-DfjwKVEulQd99AT1cqInU8ALpuzW2JonfCBp5LlH0gXmbJGtxbenUChZCGVhbbn1Ih_bSQZT7AIhIhZ-P7n0DTQL2tXm1tJ7BlbfcauuOWVX39fy5xaoOpgPhHFJhxq2aLjVEBw6DYM7IupWZuydAVXvQT7vWhsYHsoruAG60zlIN9YiebR7h-fqdz_UPPpeaByjys);
+            opacity: 0.05;
+            pointer-events: none
+        }
+        .noir-frame {
+            border: 4px solid #fff;
+            box-shadow: 8px 8px 0 0 #000
+        }
+        .sketch-border {
+            border: 2px solid currentColor;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+        }
+        .sketch-underline {
+            background-image: linear-gradient(120deg, #A62116 0%, #A62116 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+        }
+        .skew-1 { transform: rotate(-1deg) }
+        .skew-2 { transform: rotate(1.5deg) }
+        .pencil-highlight {
+            position: relative;
+        }
+        .pencil-highlight::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: -2px;
+            left: -5px;
+            right: -5px;
+            bottom: -2px;
+            background: rgba(196, 154, 77, 0.2);
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-accent-red selection:text-white overflow-x-hidden">
+<div class="fixed inset-0 grain-overlay z-50"></div>
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-gutter py-4 bg-background border-b-4 border-primary sticky top-0 z-[60]">
+<div class="flex items-center gap-4">
+<img alt="The Grog Blossoms Logo" class="h-14 w-14 object-contain rounded-full border-2 border-accent-amber bg-surface p-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBySDziDioWpdhdg5kfzJGL6IEaOqhdNLeoMmso35F_alkkmKhJPeXO1_6zOACzP37aq9Ma4Tf3NJan4psl0OxZnWJrIojwD--yTXe56K9E2l1jEaTIStCIYHL8gZ9iMZQIsdnRtgf0BG64ITDGFvDNDLhR4aBO98AQ9c8q4Xa2GUUZGAotcf0ggSkL-N37aBtM62xwq2qdp89pE5XUA2Lz4wUqTTzu1It4h8il2flwm1MVXBKhbLWctOxAUcpuPLNY8ckPkwnoz1A"/>
+<div class="font-hand text-3xl font-bold tracking-tight text-primary uppercase">THE GROG BLOSSOMS</div>
+</div>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-accent-red border-b-2 border-accent-red pb-1 font-label-sm uppercase" href="#">Ship's Log</a>
+<a class="text-on-surface-variant hover:text-accent-amber transition-colors font-label-sm uppercase" href="#">Manifest</a>
+<a class="text-on-surface-variant hover:text-accent-amber transition-colors font-label-sm uppercase" href="#">Booty!</a>
+<a class="text-on-surface-variant hover:text-accent-amber transition-colors font-label-sm uppercase" href="#">Crew</a>
+</nav>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:text-accent-red transition-colors p-1" data-icon="skull">skull</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:text-accent-amber transition-colors p-1" data-icon="anchor">anchor</span>
+</div>
+</header>
+<main class="relative pb-24 md:pb-12">
+<!-- Hero Section -->
+<section class="px-gutter py-margin-md md:py-margin-lg">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-7 relative z-10">
+<div class="noir-frame bg-surface p-2 skew-1 mb-8 overflow-hidden sketch-border border-white">
+<img alt="The Grog Blossoms band performing live" class="w-full grayscale brightness-90 hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD_PX3b8VjANThb-Ek_ukMnxxoTj0pZHIpOuvnRj8dV-quW0-XdygzbjrpUG8PwwXAbD_nPE_H1V03v-T995VcWA2qKBVQBFAhv8C-Flg4CQrWr_JZJvi5XCZnHDD9SP3mrbT9jetCTvLluZti6CojSZmcAz9d9sMg86SPZN9fpqzG3PNCQWqt9I6YZJ3my25mA9AGNBVNwQb7NfD3hOKOcFWYYIgyeLoTf4Sn83f2kjgtIIEp7opLOHbN0hCFG4DMs4I70egaC9E"/>
+</div>
+<div class="bg-primary text-background p-6 -mt-12 ml-4 md:ml-12 relative z-20 noir-frame max-w-md skew-2 sketch-border border-accent-amber">
+<h1 class="font-hand text-4xl md:text-5xl leading-tight mb-4 text-accent-red underline decoration-accent-amber decoration-wavy">THE QUARTERDECK</h1>
+<p class="font-body-lg italic">"A celtic-pirate fusion band performing at Renaissance Festivals and other events across the USA!"</p>
+</div>
+</div>
+<div class="lg:col-span-5 flex flex-col gap-8">
+<!-- Announcements Paper -->
+<div class="bg-surface-container-low p-8 border-2 border-accent-amber border-dashed relative sketch-border">
+<div class="absolute -top-4 -right-2 bg-accent-red text-white px-3 py-1 font-label-sm uppercase skew-1 shadow-md">URGENT LOG</div>
+<h2 class="font-hand text-3xl mb-4 sketch-underline">Latest Scuttlebutt</h2>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="font-bold text-accent-amber">X</span>
+<p class="text-on-surface-variant"><span class="pencil-highlight text-on-surface">Winter Knights of Cheyenne</span> dates confirmed for late 1724.</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="font-bold text-accent-amber">X</span>
+<p class="text-on-surface-variant">New shipment of grog and tunes arriving at Port Royal soon.</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="font-bold text-accent-amber">X</span>
+<p class="text-on-surface-variant">The Ledger has been updated with new booking ports.</p>
+</li>
+</ul>
+<button class="mt-6 w-full py-4 bg-accent-red text-white font-hand text-2xl hover:bg-accent-amber transition-all duration-150 uppercase tracking-widest active:scale-95 shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">JOIN THE CREW</button>
+</div>
+</div>
+</div>
+</section>
+<!-- The Galley -->
+<section class="bg-surface-container-lowest py-margin-lg border-t-4 border-accent-amber">
+<div class="px-gutter">
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="w-full md:w-1/2">
+<h2 class="font-hand text-5xl md:text-6xl mb-6 leading-none text-primary">The Galley</h2>
+<div class="noir-frame bg-surface p-2 -rotate-2 mb-8 sketch-border">
+<img alt="Grog Blossoms performing live" class="w-full grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZng7m6DcHSQPbPZFothQdp8fUGnCP7mLyXPHHtK4d5kdArgo3IL9nO8ZoRBM5VA4WC-VOqNfxgm00JcLW93H4UdDvV7OguvU5YS7vl9swXGZQBY0kWc58_WahUcmnTjsx6kU2CPc3TTy1ZcVoioTCnt-nH4_aFDJ66SEoYqXbNwh2lE69SNdXNwcohME62QPLKzdTPghk3GKHbRoo-lsSo2oC7hOWxOecPzWkoM_Wbya3R5vuiGAJaaQMZt3JLF6A0xb4reY92Q0"/>
+</div>
+</div>
+<div class="w-full md:w-1/2 flex flex-col gap-6">
+<div class="border-l-4 border-accent-red pl-6 py-2 relative">
+<div class="absolute -left-2 top-0 text-accent-red font-hand text-6xl opacity-20">"</div>
+<p class="font-body-lg text-on-surface mb-4">
+                                Our tunes aren't just played; they're hammered out like hot iron on a galley's stove. From sea shanties that rattle the rigging to celtic reels that make the dead dance, we bring the spirit of the high seas to every stage.
+                            </p>
+<p class="font-hand text-xl text-accent-amber uppercase tracking-tight">AUTHENTIC NOISE. RAW ENERGY. TOTAL CHAOS.</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-accent-red text-white p-4 text-center noir-frame rotate-1 sketch-border">
+<div class="font-display-lg leading-none">12</div>
+<div class="font-hand uppercase text-lg">Ports Visited</div>
+</div>
+<div class="bg-surface border-2 border-accent-amber p-4 text-center noir-frame -rotate-1 sketch-border">
+<div class="font-display-lg text-accent-amber leading-none">100+</div>
+<div class="font-hand uppercase text-lg">Grog Pints</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Ship's Log Section (Blog) -->
+<section class="px-gutter py-margin-lg bg-background">
+<div class="flex items-end justify-between mb-12">
+<div>
+<h2 class="font-hand text-5xl md:text-6xl text-primary mb-2">Ship's Log</h2>
+<div class="h-1 w-32 bg-accent-red sketch-border"></div>
+</div>
+<a class="font-label-sm text-accent-amber hover:text-accent-red transition-colors mb-2 border-b border-accent-amber" href="#">Read Every Entry →</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Blog Post 1 -->
+<article class="group">
+<div class="noir-frame bg-surface p-1 mb-4 sketch-border group-hover:scale-[1.02] transition-transform duration-300 -rotate-1">
+<img alt="The Black Pearl Port" class="w-full h-48 object-cover grayscale contrast-150 brightness-75" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaN4uN9z5aXz5v8z-y3G1rZ8O0R-z4x5lB1_S7I0pYv6E9lD5r9U7n3g_mX4n8wVz5mR-Fv9hVz5mR-Fv9hVz5mR-Fv9hVz5mR-Fv9hVz5mR-Fv9h"/>
+</div>
+<span class="font-label-sm text-accent-red uppercase">Oct 12, 1724</span>
+<h3 class="font-hand text-2xl mt-2 mb-3 text-on-surface sketch-underline inline-block">Raid at Port Royal</h3>
+<p class="text-on-surface-variant font-body-md line-clamp-3">The fog was thick enough to carve with a cutlass. We slipped past the guard ships with nothing but the rhythm of the waves and a silent prayer to Davy Jones...</p>
+<button class="mt-4 font-hand text-accent-amber hover:text-accent-red flex items-center gap-1 transition-colors">CONTINUE THE LOG <span class="material-symbols-outlined text-sm" data-icon="arrow_right_alt">arrow_right_alt</span></button>
+</article>
+<!-- Blog Post 2 -->
+<article class="group">
+<div class="noir-frame bg-surface p-1 mb-4 sketch-border group-hover:scale-[1.02] transition-transform duration-300 rotate-1 border-accent-amber">
+<img alt="Grog Barrel" class="w-full h-48 object-cover grayscale contrast-125 brightness-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7M_vN9z5aXz5v8z-y3G1rZ8O0R-z4x5lB1_S7I0pYv6E9lD5r9U7n3g_mX4n8wVz5mR-Fv9hVz5mR-Fv9hVz5mR-Fv9hVz5mR-Fv9hVz5mR-Fv9h"/>
+</div>
+<span class="font-label-sm text-accent-red uppercase">Sept 28, 1724</span>
+<h3 class="font-hand text-2xl mt-2 mb-3 text-on-surface sketch-underline inline-block">The Perfect Brew</h3>
+<p class="text-on-surface-variant font-body-md line-clamp-3">Every pirate worth their salt knows that the rhythm of a sea shanty depends entirely on the quality of the grog. We've finally perfected the Galley Blend...</p>
+<button class="mt-4 font-hand text-accent-amber hover:text-accent-red flex items-center gap-1 transition-colors">CONTINUE THE LOG <span class="material-symbols-outlined text-sm" data-icon="arrow_right_alt">arrow_right_alt</span></button>
+</article>
+<!-- Blog Post 3 -->
+<article class="group">
+<div class="noir-frame bg-surface p-1 mb-4 sketch-border group-hover:scale-[1.02] transition-transform duration-300 -rotate-2">
+<img alt="The Crew under moonlight" class="w-full h-48 object-cover grayscale contrast-150" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-PX3b8VjANThb-Ek_ukMnxxoTj0pZHIpOuvnRj8dV-quW0-XdygzbjrpUG8PwwXAbD_nPE_H1V03v-T995VcWA2qKBVQBFAhv8C-Flg4CQrWr_JZJvi5XCZnHDD9SP3mrbT9jetCTvLluZti6CojSZmcAz9d9sMg86SPZN9fpqzG3PNCQWqt9I6YZJ3my25mA9AGNBVNwQb7NfD3hOKOcFWYYIgyeLoTf4Sn83f2kjgtIIEp7opLOHbN0hCFG4DMs4I70egaC9E"/>
+</div>
+<span class="font-label-sm text-accent-red uppercase">Aug 15, 1724</span>
+<h3 class="font-hand text-2xl mt-2 mb-3 text-on-surface sketch-underline inline-block">Stars and Sea Salts</h3>
+<p class="text-on-surface-variant font-body-md line-clamp-3">Navigating by the North Star after a three-show run at the local tavern. The fiddles are packed, but the songs still echo in our weary ears...</p>
+<button class="mt-4 font-hand text-accent-amber hover:text-accent-red flex items-center gap-1 transition-colors">CONTINUE THE LOG <span class="material-symbols-outlined text-sm" data-icon="arrow_right_alt">arrow_right_alt</span></button>
+</article>
+</div>
+</section>
+<!-- Bento Grid Artifacts -->
+<section class="px-gutter py-margin-lg grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="md:col-span-2 noir-frame bg-surface p-8 relative overflow-hidden group sketch-border">
+<div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity text-accent-amber">
+<span class="material-symbols-outlined text-[120px]" data-icon="inventory_2">inventory_2</span>
+</div>
+<h3 class="font-hand text-3xl mb-4 sketch-underline">Smuggler's Crate</h3>
+<p class="text-on-surface-variant mb-6">Rare merch, signed broadsides, and enchanted tokens from our travels. All booty strictly legal (mostly).</p>
+<a class="inline-flex items-center gap-2 font-hand text-xl uppercase text-accent-amber hover:text-accent-red transition-colors" href="#">
+                    Loot the Store <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="md:col-span-1 noir-frame bg-accent-amber text-background p-6 flex flex-col justify-between skew-1 sketch-border">
+<h3 class="font-label-sm uppercase font-bold text-background/70">The Voyage</h3>
+<p class="font-hand text-3xl">Interactive Map coming to your port soon.</p>
+<div class="mt-4 flex justify-end">
+<span class="material-symbols-outlined text-4xl" data-icon="explore">explore</span>
+</div>
+</div>
+<div class="md:col-span-1 noir-frame bg-surface p-6 flex flex-col justify-between -rotate-1 sketch-border border-accent-red">
+<h3 class="font-label-sm uppercase text-accent-red">Articles of War</h3>
+<p class="text-body-md">The rules we live by. The songs we die for.</p>
+<div class="mt-4">
+<span class="material-symbols-outlined text-accent-red text-4xl" data-icon="gavel">gavel</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-margin-md px-gutter flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-lowest border-t-2 border-dashed border-accent-amber">
+<div class="font-hand text-lg text-accent-amber">© 1724 THE GROG BLOSSOMS. NO QUARTER GIVEN.</div>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-accent-red transition-all" href="#">The Ledger</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-accent-red transition-all" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-accent-red transition-all" href="#">Booking</a>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-background border-t-4 border-accent-amber py-2 px-2">
+<button class="flex flex-col items-center justify-center bg-accent-red text-white p-2 m-1 border-2 border-accent-red scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-hand uppercase mt-1">Ship's Log</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary p-2 scale-90 transition-transform hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-hand uppercase mt-1">Manifest</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary p-2 scale-90 transition-transform hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="treasure_chest">treasure_chest</span>
+<span class="font-hand uppercase mt-1">Booty!</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary p-2 scale-90 transition-transform hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-hand uppercase mt-1">Crew</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions for buttons and icons
+        document.querySelectorAll('button, a, span.material-symbols-outlined').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.95) rotate(1deg)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = '';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = '';
+            });
+        });
+    </script>
+</body></html>

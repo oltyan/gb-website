@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>THE GROG BLOSSOMS | Manifest</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Geist:wght@400;500&amp;family=Coming+Soon&amp;family=Gaegu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c8c6c5",
+                        "on-surface-variant": "#c4c7c8",
+                        "on-primary-container": "#636565",
+                        "primary-fixed": "#e2e2e2",
+                        "surface-variant": "#353535",
+                        "surface-container-highest": "#353535",
+                        "outline": "#8e9192",
+                        "on-error": "#690005",
+                        "outline-variant": "#444748",
+                        "on-primary": "#2f3131",
+                        "surface": "#131313",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "background": "#131313",
+                        "tertiary-fixed": "#e4e2e1",
+                        "surface-tint": "#c6c6c7",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "primary": "#ffffff",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-secondary-fixed-variant": "#474746",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#656464",
+                        "inverse-on-surface": "#303030",
+                        "tertiary-container": "#e4e2e1",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "inverse-primary": "#5d5f5f",
+                        "tertiary": "#ffffff",
+                        "surface-bright": "#393939",
+                        "surface-container-low": "#1b1b1b",
+                        "surface-container-high": "#2a2a2a",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1f1f1f",
+                        "on-surface": "#e2e2e2",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-dim": "#131313",
+                        "secondary-container": "#474746",
+                        "on-tertiary": "#303030",
+                        "primary-container": "#e2e2e2",
+                        "on-background": "#e2e2e2",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-secondary-container": "#b7b5b4",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary": "#313030",
+                        "tertiary-fixed-dim": "#c8c6c6",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "inverse-surface": "#e2e2e2",
+                        "brand-red": "#93000a",
+                        "accent-red": "#A62116",
+                        "accent-amber": "#C49A4D"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-lg": "4rem",
+                        "margin-md": "2rem",
+                        "unit": "4px",
+                        "margin-sm": "1rem",
+                        "gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Bricolage Grotesque"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Bricolage Grotesque"],
+                        "headline-md": ["Bricolage Grotesque"],
+                        "headline-lg-mobile": ["Bricolage Grotesque"],
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "hand": ["Gaegu"],
+                        "script": ["Coming Soon"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCS2w-VB_qSsYfIG3Orm0pbx1Z9xoG1SlcpU3HMjCJnmkVlUOWTfx2FFnbiPpsq1eqAjiXXamP2_0arttJDT1ziV_KYX_K5OipHndzkMsHTpFcfTinRURnnLbq81CdJ3s1gtlyrsZ2gZ6r85n44onhgNHHdCrC2e73BNykK_N9f79YWsrph-xDw8RWAmCHvMeAAKPIDFKcPFb9MaN8O3vDvvFts87D7oWCtE6eCQmzUE2koV_s5lpN2eB5iNY5ffg1s2Qm3vg_ei8s);
+            color: #e2e2e2;
+        }
+        .grain-overlay {
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBWX_4DgK8of7NHZYe9fLa1fmB49ZGW0U9JGotR9z8yBlq9IYwlRgr3e7PW55lH5cGN9rIb-DfjwKVEulQd99AT1cqInU8ALpuzW2JonfCBp5LlH0gXmbJGtxbenUChZCGVhbbn1Ih_bSQZT7AIhIhZ-P7n0DTQL2tXm1tJ7BlbfcauuOWVX39fy5xaoOpgPhHFJhxq2aLjVEBw6DYM7IupWZuydAVXvQT7vWhsYHsoruAG60zlIN9YiebR7h-fqdz_UPPpeaByjys);
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .noir-frame {
+            border: 4px solid #fff;
+            box-shadow: 8px 8px 0 0 #000;
+        }
+        .sketch-border {
+            border: 2px solid currentColor;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+        }
+        .sketch-underline {
+            background-image: linear-gradient(120deg, #A62116 0%, #A62116 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+        .sold-out {
+            color: #fff;
+            background-color: #93000a;
+            transform: rotate(-3deg);
+            display: inline-block;
+            padding: 2px 8px;
+            font-family: "JetBrains Mono";
+            font-weight: bold;
+        }
+        .pencil-highlight {
+            position: relative;
+        }
+        .pencil-highlight::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: -2px;
+            left: -5px;
+            right: -5px;
+            bottom: -2px;
+            background: rgba(196, 154, 77, 0.2);
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md pb-24 md:pb-0 overflow-x-hidden">
+<div class="fixed inset-0 grain-overlay z-50"></div>
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background text-primary dark:text-primary sticky top-0 border-b-4 border-primary z-[60] flex justify-between items-center w-full px-gutter py-4">
+<div class="flex items-center gap-4">
+<img alt="The Grog Blossoms Logo" class="h-12 w-12 object-contain rounded-full border-2 border-accent-amber bg-surface p-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGawyv5PqdTFD_-mowRD4nUNcZ9aMNpAQ_PoZkCzHgVReIGL87i8rA0FREZuS3PWnRffKEo4HXt8R9frR_Z3lRAVEdohP6ulCqfGTBRZwOSFYehCmciZLAdI3sacXdoC9HRam-aFSoCoNHuPXLIk2Z6KO0w-AG1hpIieQF_1AOUafoiLBNV_MF-rQSVfkJM8loHc0qhbM_9TO4c_5SDsjsySHyT-TTRh8SamoVxF6rqCRm3PLq0lqkTU7ZaJQzaWy4jK7_tPuECGE"/>
+<div class="font-hand text-3xl font-bold tracking-tight text-primary uppercase">THE GROG BLOSSOMS</div>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="font-label-sm text-label-sm uppercase text-on-surface-variant hover:text-accent-amber transition-colors duration-150" href="#">Ship's Log</a>
+<a class="font-label-sm text-label-sm uppercase text-accent-red border-b-2 border-accent-red pb-1" href="#">Manifest</a>
+<a class="font-label-sm text-label-sm uppercase text-on-surface-variant hover:text-accent-amber transition-colors duration-150" href="#">Booty!</a>
+<a class="font-label-sm text-label-sm uppercase text-on-surface-variant hover:text-accent-amber transition-colors duration-150" href="#">Crew</a>
+</nav>
+<div class="flex gap-4">
+<span class="material-symbols-outlined hover:text-accent-red transition-colors duration-150 p-2 cursor-pointer" data-icon="skull">skull</span>
+<span class="material-symbols-outlined hover:text-accent-amber transition-colors duration-150 p-2 cursor-pointer" data-icon="anchor">anchor</span>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-gutter py-margin-md relative z-10">
+<!-- Hero Section / Title -->
+<section class="mb-margin-lg text-center md:text-left">
+<h1 class="font-hand text-5xl md:text-7xl uppercase mb-4 text-primary">
+                THE SHIP'S <br/><span class="text-accent-red sketch-underline">MANIFEST</span>
+</h1>
+<p class="font-body-lg text-body-lg max-w-2xl text-on-surface-variant italic">
+                "A detailed record of every port we’ve pillaged and every stage we’ve scorched. No quarter given, no encore refused."
+            </p>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Ledger Left Side -->
+<div class="lg:col-span-8">
+<div class="noir-frame bg-surface-container p-gutter mb-margin-md sketch-border border-white">
+<h2 class="font-hand text-4xl mb-6 text-primary uppercase sketch-underline inline-block">
+                        Upcoming Engagements
+                    </h2>
+<!-- Ledger Table -->
+<div class="space-y-4 font-label-sm">
+<!-- Ledger Item -->
+<div class="flex flex-wrap md:flex-nowrap items-center gap-4 py-4 border-b border-dashed border-outline-variant group hover:bg-surface-variant transition-colors p-2">
+<div class="w-24 font-bold text-accent-amber font-hand text-xl">OCT 14</div>
+<div class="flex-1">
+<div class="text-2xl font-hand uppercase tracking-tight text-white">Tortuga Bay Tavern</div>
+<div class="text-on-surface-variant">Port of Nassau, BS</div>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto justify-end">
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 border-2 border-accent-amber flex items-center justify-center">
+<div class="w-3 h-3 bg-accent-amber"></div>
+</div>
+<span class="uppercase font-hand text-lg">Confirmed</span>
+</div>
+<button class="bg-accent-red text-white px-6 py-2 font-hand text-xl hover:bg-accent-amber transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">JOIN THE CREW</button>
+</div>
+</div>
+<!-- Ledger Item -->
+<div class="flex flex-wrap md:flex-nowrap items-center gap-4 py-4 border-b border-dashed border-outline-variant group hover:bg-surface-variant transition-colors p-2">
+<div class="w-24 font-bold text-accent-amber font-hand text-xl">OCT 31</div>
+<div class="flex-1">
+<div class="text-2xl font-hand uppercase tracking-tight text-white">The Kraken's Den</div>
+<div class="text-on-surface-variant">Bristol, UK</div>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto justify-end">
+<div class="sold-out uppercase font-label-sm">ALL HANDS LOST (SOLD OUT)</div>
+</div>
+</div>
+<!-- Ledger Item -->
+<div class="flex flex-wrap md:flex-nowrap items-center gap-4 py-4 border-b border-dashed border-outline-variant group hover:bg-surface-variant transition-colors p-2">
+<div class="w-24 font-bold text-accent-amber font-hand text-xl">NOV 12</div>
+<div class="flex-1">
+<div class="text-2xl font-hand uppercase tracking-tight text-white">Cutthroat Cove</div>
+<div class="text-on-surface-variant">New Orleans, LA</div>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto justify-end">
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 border-2 border-accent-amber"></div>
+<span class="uppercase font-hand text-lg">Pending</span>
+</div>
+<button class="bg-accent-red text-white px-6 py-2 font-hand text-xl hover:bg-accent-amber transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">JOIN THE CREW</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Past Voyages -->
+<div>
+<h2 class="font-hand text-4xl mb-6 uppercase text-primary sketch-underline inline-block">
+                        Past Voyages
+                    </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Past Show Card 1 -->
+<div class="noir-frame bg-surface-container-low p-4 transform rotate-1 sketch-border border-accent-amber">
+<div class="overflow-hidden border-2 border-white mb-4">
+<img class="w-full aspect-square object-cover grayscale contrast-125 brightness-90 hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2jyfRwNPKWHZDw5xSJBVQCsA58Ti7SJyDNhxtDCzpvFE96OPP7g8UciZ5p4904se5z3qxdQ1G8cKR2hmy-MSI-xd1_f0v9_Xs56ywbyjKjN17k0KBSsLVvMXttXm7_UPcVj9E8H1NwCaNweJWgXM1RMlCIrmF3_aSAxqZyrUhQR-vYKvBo2VZibGZJRAgNm1DpgwuDer2_C9tN3041g_HUjJIc-75QyyX0WmA9mFmzNt3hHdVB0hvJ5C4xVNVyOMmen36e-rF9i8"/>
+</div>
+<div class="space-y-1">
+<div class="font-hand text-xl text-accent-red uppercase">SEPT 20, 1723</div>
+<div class="font-hand text-3xl font-bold uppercase text-white">The Iron Hook Gala</div>
+<p class="font-body-md text-on-surface-variant italic">Tortuga — Total Mutiny recorded.</p>
+</div>
+</div>
+<!-- Past Show Card 2 -->
+<div class="noir-frame bg-surface-container-low p-4 transform -rotate-1 sketch-border border-white">
+<div class="overflow-hidden border-2 border-white mb-4">
+<img class="w-full aspect-square object-cover grayscale contrast-125 brightness-90 hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhE-H1i8OIBHmJlVlaLBH0kD-sVwJzW24Op4KwkYHxh0WrTVG_7IXChXLxx6c6rYLbqBFATYi2k-pdOZHkjhlLwBmsNNmSRSJrV4p2ftQuE_zWPaAoGrW6TVExHQqg_qBuCEEoZBWrfXCCPJC2XiLK6ZdMVixUzD1iyQ4Qy8xhWiwHZEZO21TIJAOXOxIQuucc9kGd2xMp3sI1rU4SkR3aIcRT8Uf_Pw6LyQvArMJ-4GoqyPhenjH1PVVkdDdxsOj7nm6PtmgtXGA"/>
+</div>
+<div class="space-y-1">
+<div class="font-hand text-xl text-accent-red uppercase">AUG 12, 1723</div>
+<div class="font-hand text-3xl font-bold uppercase text-white">Dead Man's Chest Tour</div>
+<p class="font-body-md text-on-surface-variant italic">Kingston — 3 stringed instruments broken.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar -->
+<aside class="lg:col-span-4 space-y-margin-md">
+<!-- Join Callout -->
+<div class="bg-accent-red p-gutter noir-frame text-white transform -rotate-2 sketch-border border-accent-amber">
+<h3 class="font-hand text-3xl mb-2 uppercase">RECRUITING NOW</h3>
+<p class="font-body-md mb-4 opacity-90">We're looking for able-bodied scoundrels to join the street team. Earn your rations in grog and exclusive booty.</p>
+<button class="w-full py-3 bg-white text-accent-red font-hand text-2xl uppercase hover:bg-accent-amber hover:text-white transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">SIGN THE ARTICLES</button>
+</div>
+<!-- Scrapbook Note -->
+<div class="bg-surface-container-highest p-6 border-2 border-dashed border-accent-amber relative sketch-border">
+<div class="absolute -top-4 -right-2 bg-accent-red text-white px-3 py-1 font-label-sm font-bold rotate-6 uppercase">URGENT</div>
+<p class="font-hand text-xl italic text-on-surface leading-relaxed">
+                        "If ye see a show marked as 'Sold Out', do not despair. Rumor has it the back alley entrance at Tortuga remains unguarded for those with enough coin or sharp enough blades."
+                    </p>
+<div class="mt-4 flex items-center justify-between opacity-70">
+<span class="font-hand text-lg">— The Quartermaster</span>
+</div>
+</div>
+<!-- Stats -->
+<div class="bg-surface-container-low p-6 noir-frame sketch-border border-white">
+<h4 class="font-hand text-2xl uppercase mb-4 text-accent-amber border-b border-accent-amber pb-1">Vessel Stats</h4>
+<ul class="space-y-3 font-hand text-xl">
+<li class="flex justify-between"><span>Grog Reserves:</span> <span class="text-accent-red pencil-highlight">CRITICAL</span></li>
+<li class="flex justify-between"><span>Active Bounties:</span> <span>14</span></li>
+<li class="flex justify-between"><span>Next Port:</span> <span class="text-accent-amber">NASSAU</span></li>
+</ul>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest text-on-surface border-t-2 border-dashed border-accent-amber mt-margin-lg">
+<div class="w-full py-margin-md px-gutter flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="font-hand text-xl text-accent-amber">
+                © 1724 THE GROG BLOSSOMS. NO QUARTER GIVEN.
+            </div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant font-label-sm uppercase hover:text-accent-red transition-all" href="#">The Ledger</a>
+<a class="text-on-surface-variant font-label-sm uppercase hover:text-accent-red transition-all" href="#">Privacy</a>
+<a class="text-on-surface-variant font-label-sm uppercase hover:text-accent-red transition-all" href="#">Booking</a>
+</div>
+</div>
+</footer>
+<!-- Mobile Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-background border-t-4 border-accent-amber py-2 px-2">
+<a class="flex flex-col items-center justify-center text-primary p-2 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-hand uppercase text-sm mt-1">Log</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-accent-red text-white p-2 m-1 border-2 border-accent-amber transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-hand uppercase text-sm mt-1">Manifest</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary p-2 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="treasure_chest">treasure_chest</span>
+<span class="font-hand uppercase text-sm mt-1">Booty!</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary p-2 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-hand uppercase text-sm mt-1">Crew</span>
+</a>
+</nav>
+<script>
+        // Subtle atmospheric interaction: Random rotation of paper-like elements
+        document.querySelectorAll('.noir-frame, .sketch-border').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                el.style.transform = `rotate(${(Math.random() * 2 - 1).toFixed(2)}deg) scale(1.01)`;
+                el.style.transition = 'transform 0.3s ease';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = '';
+            });
+        });
+
+        // Toggle checkbox interaction simulation
+        document.querySelectorAll('.border-b.border-dashed').forEach(line => {
+            line.addEventListener('click', () => {
+                const box = line.querySelector('.w-5.h-5');
+                if (box) {
+                    const inner = box.querySelector('.bg-accent-amber');
+                    if (inner) {
+                        inner.classList.toggle('hidden');
+                    } else {
+                        const newInner = document.createElement('div');
+                        newInner.className = 'w-3 h-3 bg-accent-amber';
+                        box.appendChild(newInner);
+                    }
+                }
+            });
+        });
+    </script>
+</body></html>
