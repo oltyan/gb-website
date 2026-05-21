@@ -3,6 +3,6 @@
 
 set -euo pipefail
 TARGET=${1:?Usage: restore.sh /path/to/output-dir}
-set -a; . /opt/mm-grogblossoms/backup.env; set +a
+set -a; . /opt/gb-website/backup.env; set +a
 restic restore latest --target "$TARGET"
-echo "Restored. Stop the app, replace /opt/mm-grogblossoms/data/grogblossoms.db, then start."
+echo "Restored. Stop the app, replace /opt/gb-website/data/grogblossoms.db, then start."

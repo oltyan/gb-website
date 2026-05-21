@@ -1,5 +1,5 @@
 [project]
-name = "mm-grogblossoms"
+name = "gb-website"
 version = "0.1.0"
 description = "The Grog Blossoms — CMS + public site"
 requires-python = ">=3.12"

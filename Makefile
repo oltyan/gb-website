@@ -25,4 +25,4 @@ lint:
 	black --check app tests scripts
 
 build:
-	docker build -t mm-grogblossoms:dev .
+	docker build -t gb-website:dev .

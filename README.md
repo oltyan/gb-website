@@ -1,8 +1,8 @@
-# mm-grogblossoms
+# gb-website
 
 The Grog Blossoms — CMS + public site, deployed on mycelium behind Cloudflare Tunnel.
 
-Part of the `mm-*` fleet. Brand: **Tavern Noir** (brutalist + hand-drawn).
+Brand: **Tavern Noir** (brutalist + hand-drawn).
 
 - Public site: https://grogblossoms.com
 - Admin (OIDC, `gb-developer` group): https://grogblossoms.com/admin/
@@ -33,6 +33,6 @@ See [`docs/runbook-deploy.md`](docs/runbook-deploy.md).
 
 ## Convention
 
-- Templates absorb the mockups in `../gb-website/stitch_the_grog_blossoms_website/` — preserve Tavern Noir class names.
+- Templates absorb the mockups in [`docs/mockups/`](docs/mockups/) — preserve Tavern Noir class names.
 - Public images reference the mm-sporekles CDN — never store user uploads locally.
 - Admin is OIDC-gated; the `gb-developer` group claim is required.

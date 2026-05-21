@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = "ghcr.io/oltyan/mm-grogblossoms"
+        IMAGE = "ghcr.io/oltyan/gb-website"
         GHCR  = credentials('ghcr-push')
         MYCELIUM_HOST = credentials('mycelium-ssh-host')
     }
@@ -40,7 +40,7 @@ pipeline {
                 sshagent(credentials: ['mycelium-ssh-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=accept-new $MYCELIUM_HOST '
-                            cd /opt/mm-grogblossoms/repo &&
+                            cd /opt/gb-website/repo &&
                             git pull --ff-only &&
                             docker compose pull &&
                             docker compose up -d

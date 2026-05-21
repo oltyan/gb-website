@@ -1,7 +1,7 @@
 """S3 uploader to mm-sporekles' design-assets bucket.
 
 v1: PLACEHOLDER implementation. Real boto3 wiring lands once the
-mm-grogblossoms-uploader IAM user is provisioned (see spec, "Image flow").
+gb-website-uploader IAM user is provisioned (see spec, "Image flow").
 
 Until then, the admin asset picker uses the `register_url()` path: paste a
 CDN URL of a file you've already placed in the bucket via other means.
