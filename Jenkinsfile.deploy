@@ -34,7 +34,7 @@ pipeline {
         GHCR  = credentials('ghcr-push')
     }
 
-    options { timestamps(); ansiColor('xterm') }
+    options { timestamps() }
 
     stages {
         stage('Checkout') { steps { checkout scm } }
