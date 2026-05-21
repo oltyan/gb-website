@@ -2,14 +2,13 @@
 //
 // mm-jenkins runs on mycelium (see mm-documents/MM_ARCHITECTURE.md), so
 // `agent any` lands on the same docker host that runs the gb-website
-// container — no ssh hop needed. The deploy stage renders secrets.env
-// from Jenkins credentials into the workspace each build (mirrors
-// mm-sporekles' Jenkinsfile.deploy `Deploy` stage — withCredentials +
-// heredoc + chmod 600 + atomic mv) so the on-host file is no longer
-// hand-managed.
+// container — no ssh hop, no registry round-trip. Build and run are
+// both local (mirrors mm-sporekles/Jenkinsfile.deploy). The deploy
+// stage renders secrets.env from Jenkins credentials into the workspace
+// each build (withCredentials + heredoc + chmod 600 + atomic mv) so the
+// on-host file is no longer hand-managed.
 //
 // Credentials needed in Jenkins (provisioned by mm-jenkins JCasC):
-//   ghcr-push                    — GHCR push token (image publish)
 //   gb-website-secret-key        — Flask SECRET_KEY (string)
 //   gb-website-oidc-client-id    — FA OIDC client ID (string)
 //   gb-website-oidc-client-secret — FA OIDC client secret (string)
@@ -29,11 +28,6 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE = "ghcr.io/oltyan/gb-website"
-        GHCR  = credentials('ghcr-push')
-    }
-
     options { timestamps() }
 
     stages {
@@ -50,15 +44,13 @@ pipeline {
             }
         }
 
-        stage('Build + push') {
+        stage('Build image') {
             steps {
-                sh '''
-                    echo "$GHCR_PSW" | docker login ghcr.io -u "$GHCR_USR" --password-stdin
-                    SHA=$(git rev-parse --short HEAD)
-                    docker build -t $IMAGE:$SHA -t $IMAGE:latest .
-                    docker push $IMAGE:$SHA
-                    docker push $IMAGE:latest
-                '''
+                // Local build — image is consumed on this same host. No
+                // registry push (matches mm-sporekles pattern). The
+                // `image:` tag in docker-compose.yml ties the compose
+                // service to the locally-built artifact.
+                sh 'docker compose build'
             }
         }
 
@@ -100,7 +92,6 @@ EOF
                         mv secrets.env.tmp secrets.env
 
                         set -x
-                        docker compose pull
                         docker compose up -d
                     '''
                 }
