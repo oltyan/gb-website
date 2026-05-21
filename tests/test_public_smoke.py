@@ -98,3 +98,9 @@ def test_gallery_index_and_detail(client, app):
     assert r1.status_code == 200 and b"Gigs" in r1.data
     r2 = client.get("/gallery/g1")
     assert r2.status_code == 200 and b"y.jpg" in r2.data
+
+
+def test_crows_nest_renders(client, app):
+    r = client.get("/crows-nest")
+    assert r.status_code == 200
+    assert b"Make Contact" in r.data

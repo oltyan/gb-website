@@ -88,3 +88,9 @@ def gallery_detail(slug: str):
 def crows_nest():
     press = PressAsset.query.order_by(PressAsset.sort_order).all()
     return render_template("public/crows_nest.html", press=press)
+
+
+@bp.post("/crows-nest/submit")
+def crows_nest_submit():
+    # Stub: Phase 5 (Task 5.2) implements the real handler.
+    abort(501)

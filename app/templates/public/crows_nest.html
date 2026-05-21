@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Crow's Nest — Press & Contact{% endblock %}
+{% block content %}
+<section class="px-6 py-12 max-w-5xl mx-auto">
+  <div class="inline-block bg-accent-amber text-background px-8 py-3 mb-8 -rotate-1 sketch-border">
+    <h1 class="font-hand text-5xl uppercase">The Crow's Nest</h1>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+    <div>
+      <h2 class="font-hand text-3xl mb-4 sketch-underline inline-block">Press Kit</h2>
+      <ul class="space-y-3">
+        {% for p in press %}
+        <li class="flex justify-between border-b border-white/10 py-2">
+          <div>
+            <a href="{{ p.file_url }}" class="font-hand text-xl hover:text-accent-amber">{{ p.title }}</a>
+            <div class="font-mono text-xs uppercase text-white/40">{{ p.kind }}</div>
+            {% if p.description %}<div class="text-sm text-on-surface-variant mt-1">{{ p.description }}</div>{% endif %}
+          </div>
+          <a href="{{ p.file_url }}" class="font-mono text-xs uppercase text-accent-amber self-start">download →</a>
+        </li>
+        {% else %}
+        <li class="text-white/40">No press materials yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="font-hand text-3xl mb-4 sketch-underline inline-block">Make Contact</h2>
+      <form method="post" action="{{ url_for('public.crows_nest_submit') }}" class="space-y-3">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <select name="kind" class="w-full bg-black/40 border border-white/20 px-3 py-2 font-mono">
+          <option value="booking">Booking inquiry</option>
+          <option value="press">Press inquiry</option>
+          <option value="general">General message</option>
+        </select>
+        <input name="from_name" required placeholder="Your name" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+        <input name="email" required type="email" placeholder="Email" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+        <input name="phone" placeholder="Phone (optional)" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+        <input name="event_date" type="date" placeholder="Event date" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+        <input name="venue" placeholder="Venue (booking)" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+        <input name="city" placeholder="City (booking)" class="w-full bg-black/40 border border-white/20 px-3 py-2">
+        <textarea name="message" required rows="5" placeholder="Your message" class="w-full bg-black/40 border border-white/20 px-3 py-2"></textarea>
+        <button class="px-6 py-2 bg-accent-red text-white font-hand uppercase tracking-widest">Send</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
