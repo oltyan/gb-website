@@ -1,0 +1,21 @@
+<div class="block-row border border-white/20 p-3" data-type="image" data-id="{{ block.id }}">
+  <div class="flex justify-between items-center mb-2">
+    <span class="font-mono text-xs uppercase text-accent-amber">Image</span>
+    <div class="flex gap-1">
+      <button type="button" onclick="moveBlock(this,'up')" class="px-2 py-1 border border-white/20 text-xs">↑</button>
+      <button type="button" onclick="moveBlock(this,'down')" class="px-2 py-1 border border-white/20 text-xs">↓</button>
+      <button type="button" onclick="removeBlock(this)" class="px-2 py-1 border border-red-500/40 text-red-300 text-xs">×</button>
+    </div>
+  </div>
+  <input data-field="url" value="{{ block.data.url or '' }}" placeholder="CDN URL" class="w-full bg-black/40 border border-white/20 px-2 py-1 font-mono text-sm">
+  <input data-field="caption" value="{{ block.data.caption or '' }}" placeholder="Caption" class="w-full bg-black/40 border border-white/20 px-2 py-1 mt-1">
+  <input data-field="alt" value="{{ block.data.alt or '' }}" placeholder="Alt text" class="w-full bg-black/40 border border-white/20 px-2 py-1 mt-1">
+  <div class="mt-1 flex gap-2">
+    <select data-field="tilt" data-cast="int" class="bg-black/40 border border-white/20 px-2 py-1">
+      {% for t in [-2,-1,0,1,2] %}<option value="{{ t }}" {% if block.data.tilt == t %}selected{% endif %}>tilt {{ t }}°</option>{% endfor %}
+    </select>
+    <select data-field="border" class="bg-black/40 border border-white/20 px-2 py-1">
+      {% for b in ['white','amber','red'] %}<option value="{{ b }}" {% if block.data.border == b %}selected{% endif %}>{{ b }}</option>{% endfor %}
+    </select>
+  </div>
+</div>

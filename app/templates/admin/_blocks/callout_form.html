@@ -1,0 +1,11 @@
+<div class="block-row border border-white/20 p-3" data-type="callout" data-id="{{ block.id }}">
+  <div class="flex justify-between items-center mb-2">
+    <span class="font-mono text-xs uppercase text-accent-amber">Callout</span>
+    <button type="button" onclick="removeBlock(this)" class="px-2 py-1 border border-red-500/40 text-red-300 text-xs">×</button>
+  </div>
+  <input data-field="label" value="{{ block.data.label or '' }}" placeholder="Label (e.g. URGENT LOG)" class="w-full bg-black/40 border border-white/20 px-2 py-1">
+  <textarea data-field="text" rows="2" class="w-full bg-black/40 border border-white/20 px-2 py-1 mt-1">{{ block.data.text or '' }}</textarea>
+  <select data-field="accent" class="bg-black/40 border border-white/20 px-2 py-1 mt-1">
+    {% for a in ['amber','red'] %}<option value="{{ a }}" {% if block.data.accent == a %}selected{% endif %}>{{ a }}</option>{% endfor %}
+  </select>
+</div>

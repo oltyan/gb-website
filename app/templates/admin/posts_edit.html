@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+{% block title %}Edit Post — Admin{% endblock %}
+{% block content %}
+<h1 class="text-3xl mb-6">Edit Post</h1>
+
+<form method="post" action="{{ url_for('admin.posts_edit', id=post.id) }}" class="space-y-4 max-w-3xl mb-12">
+  {{ form.hidden_tag() }}
+  {% for field in form if field.name not in ('csrf_token', 'body_md') %}
+  <div>
+    <label class="block text-xs uppercase tracking-widest text-white/60 mb-1">{{ field.label.text }}</label>
+    {{ field(class_="w-full bg-black/40 border border-white/20 px-3 py-2 text-white font-mono") }}
+  </div>
+  {% endfor %}
+  <button class="px-6 py-2 bg-white text-black uppercase tracking-widest">Save Fields</button>
+</form>
+
+<h2 class="text-2xl mb-4">Body Blocks</h2>
+
+<div id="block-editor" class="space-y-3 max-w-3xl">
+  {% for b in post.blocks %}
+    {% include "admin/_blocks/" ~ b.type ~ "_form.html" with context %}
+  {% endfor %}
+</div>
+
+<div class="mt-4 flex gap-2 flex-wrap">
+  {% for t in block_types %}
+  <button hx-get="{{ url_for('admin.blocks_new_partial', block_type=t) }}"
+          hx-target="#block-editor" hx-swap="beforeend"
+          class="px-3 py-1 border border-white/40 text-xs uppercase">+ {{ t }}</button>
+  {% endfor %}
+</div>
+
+<form method="post" action="{{ url_for('admin.posts_blocks_save', id=post.id) }}" class="mt-6">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="blocks" id="blocks-json">
+  <button type="submit" onclick="serialize()" class="px-6 py-2 bg-white text-black uppercase tracking-widest">Save Blocks</button>
+</form>
+
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<script>
+function serialize() {
+  const blocks = [];
+  document.querySelectorAll('#block-editor > .block-row').forEach(row => {
+    const type = row.dataset.type;
+    const data = {};
+    row.querySelectorAll('[data-field]').forEach(el => {
+      let v = el.value;
+      if (el.dataset.cast === 'int') v = parseInt(v, 10);
+      else if (el.dataset.cast === 'json') {
+        try { v = JSON.parse(v); } catch { v = null; }
+      }
+      data[el.dataset.field] = v;
+    });
+    blocks.push({ id: row.dataset.id, type, data });
+  });
+  document.getElementById('blocks-json').value = JSON.stringify(blocks);
+}
+function removeBlock(btn) { btn.closest('.block-row').remove(); }
+function moveBlock(btn, dir) {
+  const row = btn.closest('.block-row');
+  const sibling = dir === 'up' ? row.previousElementSibling : row.nextElementSibling;
+  if (sibling) { row.parentNode.insertBefore(dir === 'up' ? row : sibling, dir === 'up' ? sibling : row); }
+}
+</script>
+{% endblock %}

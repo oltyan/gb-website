@@ -1,0 +1,9 @@
+<div class="block-row border border-white/20 p-3" data-type="stat_pair" data-id="{{ block.id }}">
+  <div class="flex justify-between items-center mb-2">
+    <span class="font-mono text-xs uppercase text-accent-amber">Stat Pair</span>
+    <button type="button" onclick="removeBlock(this)" class="px-2 py-1 border border-red-500/40 text-red-300 text-xs">×</button>
+  </div>
+  <p class="text-xs text-white/40 mb-2">Use the JSON textarea (left/right) — UI to be expanded later.</p>
+  <textarea data-field="left" data-cast="json" rows="3" class="w-full bg-black/40 border border-white/20 px-2 py-1 font-mono text-xs">{{ block.data.left | tojson }}</textarea>
+  <textarea data-field="right" data-cast="json" rows="3" class="w-full bg-black/40 border border-white/20 px-2 py-1 font-mono text-xs mt-1">{{ block.data.right | tojson }}</textarea>
+</div>

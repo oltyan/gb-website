@@ -1,0 +1,11 @@
+<div class="block-row border border-white/20 p-3" data-type="gallery_inline" data-id="{{ block.id }}">
+  <div class="flex justify-between items-center mb-2">
+    <span class="font-mono text-xs uppercase text-accent-amber">Inline Gallery</span>
+    <div class="flex gap-1">
+      <button type="button" onclick="moveBlock(this,'up')" class="px-2 py-1 border border-white/20 text-xs">↑</button>
+      <button type="button" onclick="moveBlock(this,'down')" class="px-2 py-1 border border-white/20 text-xs">↓</button>
+      <button type="button" onclick="removeBlock(this)" class="px-2 py-1 border border-red-500/40 text-red-300 text-xs">×</button>
+    </div>
+  </div>
+  <input data-field="gallery_id" data-cast="int" value="{{ block.data.gallery_id or '' }}" placeholder="Gallery ID" class="bg-black/40 border border-white/20 px-2 py-1">
+</div>

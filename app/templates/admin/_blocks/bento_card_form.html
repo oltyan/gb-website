@@ -1,0 +1,13 @@
+<div class="block-row border border-white/20 p-3" data-type="bento_card" data-id="{{ block.id }}">
+  <div class="flex justify-between items-center mb-2">
+    <span class="font-mono text-xs uppercase text-accent-amber">Bento Card</span>
+    <button type="button" onclick="removeBlock(this)" class="px-2 py-1 border border-red-500/40 text-red-300 text-xs">×</button>
+  </div>
+  <input data-field="title" value="{{ block.data.title or '' }}" placeholder="Title" class="w-full bg-black/40 border border-white/20 px-2 py-1">
+  <textarea data-field="body" rows="2" class="w-full bg-black/40 border border-white/20 px-2 py-1 mt-1">{{ block.data.body or '' }}</textarea>
+  <input data-field="link_url" value="{{ block.data.link_url or '' }}" placeholder="Link URL" class="w-full bg-black/40 border border-white/20 px-2 py-1 mt-1">
+  <input data-field="link_text" value="{{ block.data.link_text or '' }}" placeholder="Link text" class="w-full bg-black/40 border border-white/20 px-2 py-1 mt-1">
+  <select data-field="accent" class="bg-black/40 border border-white/20 px-2 py-1 mt-1">
+    {% for a in ['amber','red','white'] %}<option value="{{ a }}" {% if block.data.accent == a %}selected{% endif %}>{{ a }}</option>{% endfor %}
+  </select>
+</div>

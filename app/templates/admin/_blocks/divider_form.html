@@ -1,0 +1,9 @@
+<div class="block-row border border-white/20 p-3" data-type="divider" data-id="{{ block.id }}">
+  <div class="flex justify-between items-center mb-2">
+    <span class="font-mono text-xs uppercase text-accent-amber">Divider</span>
+    <button type="button" onclick="removeBlock(this)" class="px-2 py-1 border border-red-500/40 text-red-300 text-xs">×</button>
+  </div>
+  <select data-field="style" class="bg-black/40 border border-white/20 px-2 py-1">
+    {% for s in ['torn','dashed-amber','sketch-line'] %}<option value="{{ s }}" {% if block.data.style == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+  </select>
+</div>
