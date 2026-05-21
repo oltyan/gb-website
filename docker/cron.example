@@ -1,0 +1,6 @@
+# /etc/cron.d/mm-grogblossoms — install on mycelium as root
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Nightly at 03:17
+17 3 * * * root /opt/mm-grogblossoms/repo/scripts/backup.sh >> /var/log/mm-grogblossoms-backup.log 2>&1
