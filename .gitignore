@@ -28,6 +28,11 @@ app/static/design/
 .env.local
 secrets.env
 
+# Terraform
+infra/.terraform/
+infra/*.tfplan
+infra/errored.tfstate
+
 # IDE
 .vscode/
 .idea/
