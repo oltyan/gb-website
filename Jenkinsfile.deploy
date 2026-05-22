@@ -43,7 +43,7 @@ pipeline {
                             cd /opt/gb-website/repo &&
                             git pull --ff-only &&
                             docker compose pull &&
-                            docker compose up -d
+                            docker compose up -d --wait --wait-timeout 60
                         '
                     '''
                 }
@@ -52,7 +52,18 @@ pipeline {
 
         stage('Smoke') {
             steps {
-                sh 'curl -fsS --max-time 30 https://grogblossoms.com/healthz || (echo "Healthcheck failed" && exit 1)'
+                sh '''
+                    for i in 1 2 3 4 5 6; do
+                        if curl -fsS --max-time 10 https://www.grogblossoms.com/healthz; then
+                            echo "Healthcheck OK on attempt $i"
+                            exit 0
+                        fi
+                        echo "Attempt $i failed, sleeping 5s"
+                        sleep 5
+                    done
+                    echo "Healthcheck failed after retries"
+                    exit 1
+                '''
             }
         }
     }
