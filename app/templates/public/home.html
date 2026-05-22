@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block title %}The Grog Blossoms — The Quarterdeck{% endblock %}
 {% block content %}
+{% if settings.home_background_url %}
+<div aria-hidden="true"
+     class="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat pointer-events-none opacity-25"
+     style="background-image: url('{{ settings.home_background_url }}');"></div>
+{% endif %}
 <section class="px-6 py-12 md:py-20">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
     <div class="lg:col-span-7 relative z-10">

@@ -226,6 +226,7 @@ class SiteSettings(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     hero_quote: Mapped[str] = mapped_column(Text, default="")
     hero_image_url: Mapped[str] = mapped_column(String(1024), default="")
+    home_background_url: Mapped[str] = mapped_column(String(1024), default="")
     logo_url: Mapped[str] = mapped_column(String(1024), default="")
     contact_email: Mapped[str] = mapped_column(String(255), default="")
     social_links: Mapped[list] = mapped_column(JSON, default=list)
