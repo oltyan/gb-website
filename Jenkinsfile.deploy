@@ -92,7 +92,7 @@ EOF
                         mv secrets.env.tmp secrets.env
 
                         set -x
-                        docker compose up -d
+                        docker compose up -d --wait
                     '''
                 }
             }
