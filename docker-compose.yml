@@ -16,7 +16,12 @@ services:
       - DATABASE_URL=sqlite:////data/grogblossoms.db
       - SESSION_COOKIE_SECURE=true
     volumes:
-      - /opt/gb-website/data:/data
+      # Named volume — Docker-managed, portable across hosts (Mac/Linux/EC2),
+      # no host filesystem permissions or path-sharing requirements. SQLite
+      # DB lives at /data/grogblossoms.db inside the container; backups use
+      # `docker exec sqlite3 .backup` + `docker cp` to extract a snapshot
+      # (see scripts/backup.sh).
+      - gb_data:/data
     restart: unless-stopped
     networks:
       - default
@@ -41,6 +46,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+
+volumes:
+  gb_data:
 
 networks:
   shared-tunnel:

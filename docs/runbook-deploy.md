@@ -64,8 +64,14 @@ Should already exist if mm-sporekles is up.
 
 ```bash
 ssh mycelium
-sudo mkdir -p /opt/gb-website/{data,backups}
+# /opt/gb-website holds backup.env (restic + B2 credentials). It does
+# NOT hold the database — that lives in a Docker named volume (gb_data)
+# managed by docker-compose, no host-side path required. Snapshot
+# landing dir for backup.sh defaults to $HOME/gb-website-backups
+# (override with SNAPSHOT_DIR env var).
+sudo mkdir -p /opt/gb-website
 sudo chown -R "$USER:$(id -gn)" /opt/gb-website
+mkdir -p "$HOME/gb-website-backups"
 ```
 
 (`$USER:$USER` won't work on macOS — Mac users don't have a per-user
@@ -133,20 +139,21 @@ token. gb-website declares its hostname via `homebody.*` Docker labels
 
 ## Restore from backup
 
-There is no permanent on-host clone — restore from a throwaway clone
-plus the live Jenkins workspace for compose context.
+DB lives in the `gb_data` Docker named volume. `scripts/restore.sh`
+extracts the latest restic snapshot and `docker cp`s it into the volume
+via the (stopped) `gb-website-app` container.
 
 ```bash
 ssh mycelium
-# Stop the running app via its container name (no working-dir dependency).
-docker stop gb-website-app
 
-# Pull the restore script from a temp clone.
+# One-shot restore via the script (latest snapshot by default; pass a
+# restic snapshot id to pick a specific one).
 git clone --depth 1 https://github.com/oltyan/gb-website.git /tmp/gb-website-restore
-mkdir -p /tmp/restore && /tmp/gb-website-restore/scripts/restore.sh /tmp/restore
-cp /tmp/restore/opt/gb-website/backups/grogblossoms-YYYY-MM-DD.db /opt/gb-website/data/grogblossoms.db
-
-# Re-trigger the Jenkins deploy job to bring the app back up with the
-# restored DB — that's the canonical path (renders secrets.env + runs
-# compose). Trigger from the Jenkins UI or `gh workflow run`-equivalent.
+/tmp/gb-website-restore/scripts/restore.sh                 # latest
+# or:
+# /tmp/gb-website-restore/scripts/restore.sh <snapshot-id>
 ```
+
+The script stops the container, copies the restored DB into
+`/data/grogblossoms.db` inside the volume, and restarts. No host-side
+data path involved.
