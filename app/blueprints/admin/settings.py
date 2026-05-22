@@ -12,6 +12,10 @@ from . import bp, require_admin_group
 class SiteSettingsForm(FlaskForm):
     hero_quote = TextAreaField("Hero quote", validators=[Optional()])
     hero_image_url = StringField("Hero image URL", validators=[Optional(), URL()])
+    home_background_url = StringField(
+        "Home background image URL (CDN, faded behind home page)",
+        validators=[Optional(), URL()],
+    )
     logo_url = StringField("Logo URL", validators=[Optional(), URL()])
     contact_email = StringField("Contact email", validators=[Optional()])
     footer_text = StringField("Footer text", validators=[Optional()])
