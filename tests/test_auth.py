@@ -96,3 +96,19 @@ def test_oidc_callback_rejects_user_without_required_group(client, app):
     with patch("app.blueprints.auth.views._fetch_token", return_value=fake_token):
         response = client.get("/auth/oidc/callback?code=fake&state=fake")
         assert response.status_code == 403
+
+
+def test_login_callback_url_is_https_behind_tls_terminating_proxy(client):
+    # In production cloudflared terminates TLS and forwards plain HTTP with
+    # X-Forwarded-Proto: https. The OIDC provider only authorises the https
+    # callback, so the redirect_uri we hand it must honour that header.
+    from flask import redirect as _redirect
+
+    with patch("app.blueprints.auth.views.oauth.fa") as mock_fa:
+        mock_fa.authorize_redirect.side_effect = lambda uri: _redirect("https://idp.test/?u=" + uri)
+        client.get(
+            "/auth/login",
+            headers={"Host": "www.grogblossoms.com", "X-Forwarded-Proto": "https"},
+        )
+        (redirect_uri,), _ = mock_fa.authorize_redirect.call_args
+    assert redirect_uri == "https://www.grogblossoms.com/auth/oidc/callback"
