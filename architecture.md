@@ -9,8 +9,9 @@ covers *how* you operate the system, this covers *what* the system is.
   mm-homebody, mm-sporekles-api:** mycelium (macOS, Docker Desktop).
 - **mm-jenkins:** AWS as of 2026-05 (was on mycelium). See [Open questions](#open-questions-jenkins-in-aws-migration)
   — the runbook hasn't been updated yet and still assumes Jenkins-on-mycelium.
-- **Route 53 zone `grogblossoms.com`, CloudFront apex redirect:** AWS. See
-  [infra/main.tf](infra/main.tf).
+- **DNS zone `grogblossoms.com`, apex → `www` redirect:** Cloudflare. The
+  domain is registered at Amazon Registrar but delegated to Cloudflare
+  nameservers. See [DNS lives in Cloudflare](#dns-lives-in-cloudflare).
 - **Restic backups:** Backblaze B2, config at `/opt/gb-website/backup.env`
   on mycelium.
 - **Application secrets** (`SECRET_KEY`, OIDC client id/secret, future SMTP
@@ -23,9 +24,9 @@ covers *how* you operate the system, this covers *what* the system is.
 
 ```
 www.grogblossoms.com
-        ▼  (Route 53 CNAME — manual record, not managed by mm-homebody)
-<tunnel-uuid>.cfargotunnel.com
-        ▼  (Cloudflare tunnel)
+        ▼  (Cloudflare DNS — proxied Tunnel record for the shared mm tunnel)
+Cloudflare tunnel
+        ▼
 cloudflared on mycelium
         ▼  (ingress map pushed by mm-homebody, keyed on Docker labels)
 gb-website-app:8000 on shared-tunnel network
@@ -33,8 +34,11 @@ gb-website-app:8000 on shared-tunnel network
 SQLite at /data/grogblossoms.db in gb-website-deploy_gb_data volume
 ```
 
-Apex `grogblossoms.com` is a CloudFront distribution that 301s to `www`
-(PR #15, see [infra/main.tf](infra/main.tf)).
+Apex `grogblossoms.com` is a proxied CNAME to `www.grogblossoms.com` in
+Cloudflare DNS, plus a Cloudflare Redirect Rule ("Apex to www") that 301s
+`http*://grogblossoms.com/*` to `https://www.grogblossoms.com/${2}` with the
+query string preserved. Both were created by hand in the Cloudflare
+dashboard on 2026-11-13 and are not managed by code in this repo.
 
 ## mycelium host
 
@@ -80,13 +84,34 @@ When mm-homebody's compose restarts cloudflared (same project), the tunnel
 reloads ingress — expect transient 502s on `www` until homebody re-pushes
 the gb-website entry.
 
-### DNS not in Cloudflare
+### DNS lives in Cloudflare
 
-`grogblossoms.com` lives in Route 53. mm-homebody's CF-DNS step is a no-op
-for this zone (and logs an error until per-zone DNS opt-out lands upstream).
-The `www` CNAME → `<tunnel-uuid>.cfargotunnel.com` is a **manual** Route 53
-record. If the tunnel is destroyed and recreated with a new UUID, that
-CNAME goes stale and has to be hand-updated.
+The `grogblossoms.com` zone is served by Cloudflare nameservers. The
+Route 53 hosted zone is no longer authoritative — records written there
+have no effect.
+
+Records in the Cloudflare zone as of 2026-11-13:
+
+| Name | Type | Target | Proxy |
+|---|---|---|---|
+| `grogblossoms.com` | CNAME | `www.grogblossoms.com` | Proxied |
+| `www.grogblossoms.com` | Tunnel | shared mm tunnel (`workspace-mcp`) | Proxied |
+| `design-assets.grogblossoms.com` | CNAME | CloudFront (mm-sporekles CDN) | DNS only |
+| `_….design-assets.grogblossoms.com` | CNAME | ACM validation for the CDN cert | DNS only |
+
+There are no MX/SPF/DKIM/DMARC records — the domain cannot receive mail.
+
+**2026-11-13 outage:** the bare domain stopped resolving because the zone
+had been delegated to Cloudflare without an apex record; the previous
+apex redirect (Route 53 alias → CloudFront, PR #15) was stranded in the
+old zone. `www` was unaffected. Fixed by adding the apex CNAME and
+redirect rule above. When moving a zone between providers, export and
+diff the full record set first.
+
+Not yet confirmed: whether mm-homebody's CF-DNS step now manages the `www`
+record for this zone, or whether it is still a hand-made record.
+`mm-homebody/rules.yml` still annotates the zone as "lives in Route 53;
+manual DNS".
 
 ## Secrets
 

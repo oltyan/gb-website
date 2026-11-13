@@ -27,13 +27,11 @@ services:
       - default
       - shared-tunnel
     # mm-homebody discovers this container via these labels and registers
-    # it in the shared Cloudflare tunnel's ingress. Zone grogblossoms.com
-    # is in Route 53 (not Cloudflare), so:
-    #   - Homebody pushes the cloudflared ingress (hostname -> http://gb-website-app:8000) — works
-    #   - Homebody's CF-DNS step is a no-op for this zone (logs an error
-    #     until per-zone DNS opt-out lands upstream — see runbook). The
-    #     DNS record itself is a manual CNAME in Route 53 pointing at
-    #     <tunnel-uuid>.cfargotunnel.com.
+    # it in the shared Cloudflare tunnel's ingress (hostname ->
+    # http://gb-website-app:8000). Zone grogblossoms.com is served by
+    # Cloudflare DNS: www is a proxied Tunnel record, and the apex is a
+    # proxied CNAME to www with a Cloudflare redirect rule (see
+    # architecture.md, "DNS lives in Cloudflare").
     # Prerequisite: grogblossoms.com must be in mm-homebody/rules.yml
     # allowed_zones, otherwise homebody rejects this registration.
     labels:

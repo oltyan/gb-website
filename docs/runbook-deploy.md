@@ -5,8 +5,8 @@
 gb-website runs on mycelium as a single Flask container. It joins the
 `shared-tunnel` Docker network so mm-homebody can register it in the
 **one** Cloudflare tunnel that fronts all mycelium services. The
-`grogblossoms.com` zone lives in Route 53 (not Cloudflare), so DNS
-records are created manually pointing at `<tunnel-uuid>.cfargotunnel.com`.
+`grogblossoms.com` zone is served by Cloudflare DNS: `www` is a proxied
+Tunnel record and the apex redirects to `www` (see Prerequisites § 3).
 Admin uploads call the mm-sporekles sidecar at
 `http://mm-sporekles-api:3000` on the same `shared-tunnel` network.
 
@@ -34,22 +34,25 @@ file on mycelium.
 
 `grogblossoms.com` must be in `mm-homebody/rules.yml` `allowed_zones`
 before mm-homebody will accept this container's registration. PR
-required to add it. (Optional: also add per-zone DNS opt-out so homebody
-doesn't try to create a CF CNAME for a Route 53 zone.)
+required to add it.
 
-### 3. Route 53 records (manual — `grogblossoms.com` is not in CF)
+### 3. Cloudflare DNS records
 
-Two records in the `grogblossoms.com` zone. The tunnel UUID is the
-shared mm tunnel (currently `b58b6f1b-c70e-4321-88e7-bd0bf6ae8a62`,
-the `workspace-mcp` tunnel — confirm from CF dashboard).
+The `grogblossoms.com` zone is served by Cloudflare (registered at Amazon
+Registrar, delegated to Cloudflare nameservers). Route 53 is not
+authoritative. The tunnel is the shared mm tunnel (currently
+`b58b6f1b-c70e-4321-88e7-bd0bf6ae8a62`, the `workspace-mcp` tunnel —
+confirm from CF dashboard).
 
-| Name | Type | Value |
-|---|---|---|
-| `www.grogblossoms.com` | `CNAME` | `<tunnel-uuid>.cfargotunnel.com` |
-| `grogblossoms.com` (apex) | `A` ALIAS | S3 redirect bucket → `https://www.grogblossoms.com/` (or omit until v1.1) |
+| Name | Type | Value | Proxy |
+|---|---|---|---|
+| `www.grogblossoms.com` | Tunnel | shared mm tunnel | Proxied |
+| `grogblossoms.com` (apex) | `CNAME` | `www.grogblossoms.com` | Proxied |
 
-Route 53 doesn't support CNAME at zone apex; the S3 redirect bucket is
-the standard workaround for `www`-canonical sites.
+Plus one Redirect Rule (Rules → Redirect Rules), "Apex to www":
+wildcard `http*://grogblossoms.com/*` → `https://www.grogblossoms.com/${2}`,
+301, preserve query string. The apex record must stay proxied or the rule
+never runs.
 
 ### 4. `shared-tunnel` Docker network
 
@@ -130,7 +133,7 @@ token. gb-website declares its hostname via `homebody.*` Docker labels
 1. `docker compose ps` — `gb-website-app` should be `Up (healthy)`.
 2. `docker logs mm-homebody --tail 50 | grep gb-website` — homebody should log a registration line. If you see `zone 'grogblossoms.com' not in allowed_zones`, step 2 of Prerequisites isn't done yet.
 3. `docker exec mm-homebody cat /output/config.yml | grep grogblossoms` — should show the ingress entry.
-4. After Route 53 records propagate: `curl -I https://www.grogblossoms.com/healthz` → `200 OK`.
+4. After DNS records propagate: `curl -I https://www.grogblossoms.com/healthz` → `200 OK`, and `curl -I https://grogblossoms.com/` → `301` to `https://www.grogblossoms.com/`.
 5. Smoke: log into `/admin/`, upload a file in `/admin/assets/`, verify it lands at `https://design-assets.grogblossoms.com/assets/<name>`.
 
 ## Deploy a change
