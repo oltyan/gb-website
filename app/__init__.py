@@ -2,6 +2,7 @@ import os
 from dataclasses import asdict
 
 from flask import Flask, jsonify
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import load_config
 from .extensions import csrf, db, login_manager, migrate, oauth
@@ -12,6 +13,11 @@ def create_app(config_name: str | None = None) -> Flask:
     app = Flask(__name__)
     cfg = load_config(config_name)
     app.config.update(asdict(cfg))
+
+    # cloudflared terminates TLS and forwards plain HTTP, so trust one hop of
+    # X-Forwarded-Proto/-For. Without this url_for(_external=True) builds
+    # http:// URLs and the OIDC provider rejects the login callback.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     db.init_app(app)
     migrate.init_app(app, db)
