@@ -82,8 +82,10 @@ on whichever OS this is run on.)
 
 The repo is checked out at `/Users/chris/Projects/gb-website` on mycelium.
 The pull script runs `docker compose` from there, and the container reads
-`secrets.env` from that directory. Jenkins runs on EC2 and cannot write to
-mycelium, so that file is created and maintained by hand:
+`secrets.env` from that directory. On mycelium that path is a symlink to
+`/opt/gb-website/secrets.env`, so the real file sits outside the git checkout
+next to `backup.env`. Jenkins runs on EC2 and cannot write to mycelium, so the
+file is created and maintained by hand:
 
 ```
 SECRET_KEY=...
@@ -182,7 +184,7 @@ migration, restore the database (below).
 ## Rotate a secret
 
 1. Update the Jenkins credential (mm-jenkins, JCasC seed).
-2. On mycelium, edit `secrets.env` in `/Users/chris/Projects/gb-website`.
+2. On mycelium, edit `/opt/gb-website/secrets.env` (the checkout's `secrets.env` is a symlink to it).
 3. `docker compose up -d --force-recreate` in that directory.
 
 ## Manual deploy (fallback)
@@ -195,6 +197,11 @@ docker compose up -d --build --wait
 ```
 
 The compose file pins the project name, so no `-p` flag is needed.
+
+Once the pull timer is installed this is a temporary override: the next
+tick sees the container is not on the ECR `:latest` image and replaces the
+local build with it. To keep a manual build in place, unload the launchd
+agent first.
 
 ## Restore from backup
 

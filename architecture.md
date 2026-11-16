@@ -132,13 +132,14 @@ The pipeline no longer delivers them. Jenkins on EC2 cannot write to
 mycelium, so [Jenkinsfile.deploy](Jenkinsfile.deploy) does not read or render
 secrets, and the mycelium pull script is installed without env rendering. The
 container reads `secrets.env` in `/Users/chris/Projects/gb-website` on
-mycelium. That file was copied by hand from the archived Jenkins workspace on
+mycelium, which is a symlink to `/opt/gb-website/secrets.env`. That file was
+copied by hand from the archived Jenkins workspace on
 2026-05-25 and is now the working copy; it also carries the non-secret config
 that used to be inlined in the Jenkinsfile (OIDC discovery URL, sporekles
 base, CDN base, SMTP from, contact email, tenant).
 
 Rotating a secret is two manual steps: update the Jenkins credential, then
-edit `secrets.env` on mycelium and recreate the container. See
+edit `/opt/gb-website/secrets.env` on mycelium and recreate the container. See
 [docs/runbook-deploy.md](docs/runbook-deploy.md).
 
 ## How deploys work
