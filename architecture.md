@@ -55,19 +55,20 @@ dashboard on 2026-11-13 and are not managed by code in this repo.
 ### Volume name has a project prefix
 
 The named volume on disk is `gb-website-deploy_gb_data`, not `gb_data`.
-Compose prefixes volume names with the project name; the Jenkins job is
-`gb-website-deploy`, so the workspace dir (and therefore the project name)
-was `gb-website-deploy`.
+Compose prefixes volume names with the project name, and the first deploys
+ran from a Jenkins workspace called `gb-website-deploy`.
 
-**Implication for manual deploys:** always pass `-p gb-website-deploy`:
+[docker-compose.yml](docker-compose.yml) pins that project name with a
+top-level `name: gb-website-deploy`, so every `docker compose` call from the
+repo root lands on the existing volume without a `-p` flag:
 
 ```bash
 cd /Users/chris/Projects/gb-website
-docker compose -p gb-website-deploy up -d --wait
+docker compose up -d --wait
 ```
 
-Without `-p`, compose creates a fresh empty `gb-website_gb_data` and the
-surviving DB is orphaned.
+Do not change or remove the `name:` key. With any other project name compose
+creates a fresh empty volume and the real database is orphaned.
 
 ### mm-homebody owns cloudflared and `shared-tunnel`
 
@@ -216,6 +217,6 @@ Until that migration is done, deploys are manual (see
 
 ```bash
 cd /Users/chris/Projects/gb-website && git pull --ff-only
-docker compose -p gb-website-deploy up -d --build --wait
+docker compose up -d --build --wait
 ```
 
