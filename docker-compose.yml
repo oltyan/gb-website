@@ -5,16 +5,16 @@ name: gb-website-deploy
 
 services:
   app:
-    # Local build on mycelium — no registry round-trip (matches the
-    # mm-sporekles pattern). `build:` is read by `docker compose build`
-    # in Jenkinsfile.deploy; `image:` is the tag applied so `up -d` can
-    # find the artifact + so we get layer caching across deploys.
+    # The production image is built by Jenkins (EC2), pushed to ECR, and
+    # pulled on mycelium by /opt/gb-website/deploy-pull.sh, which retags it
+    # to the local name in `image:` below before `docker compose up`.
+    # `build:` is for local development and manual deploys only.
     build: .
     image: gb-website:latest
     container_name: gb-website-app
-    # Rendered by Jenkinsfile.deploy on every build from withCredentials.
-    # Path is relative to the compose working directory (the Jenkins
-    # workspace at deploy time; the repo root for local debugging).
+    # Maintained by hand on mycelium (never committed). Jenkins runs on EC2
+    # and cannot write it; see docs/runbook-deploy.md, "Rotate a secret".
+    # Path is relative to the compose working directory.
     env_file: secrets.env
     environment:
       - FLASK_ENV=production

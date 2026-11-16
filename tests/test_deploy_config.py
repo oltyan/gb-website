@@ -20,3 +20,37 @@ def test_compose_keeps_local_image_and_container_names():
     assert app["image"] == "gb-website:latest"
     assert app["container_name"] == "gb-website-app"
     assert "gb_data:/data" in app["volumes"]
+
+JENKINSFILE = (ROOT / "Jenkinsfile.deploy").read_text()
+ECR = "365647376064.dkr.ecr.us-east-1.amazonaws.com"
+
+
+def test_jenkinsfile_polls_scm():
+    assert "pollSCM('H/5 * * * *')" in JENKINSFILE
+
+
+def test_jenkinsfile_pushes_sha_and_latest_to_ecr_after_tests():
+    assert ECR in JENKINSFILE
+    assert 'docker push "${ECR}:${SHA}"' in JENKINSFILE
+    assert 'docker push "${ECR}:latest"' in JENKINSFILE
+    assert JENKINSFILE.index("pytest") < JENKINSFILE.index("docker push")
+
+
+def test_jenkinsfile_never_starts_containers_or_touches_secrets():
+    # Jenkins runs on EC2; the site runs on mycelium.
+    for forbidden in (
+        "docker compose up",
+        "secrets.env",
+        "gb-website-secret-key",
+        "gb-website-oidc-client-id",
+        "gb-website-oidc-client-secret",
+        "withAWS",
+    ):
+        assert forbidden not in JENKINSFILE, forbidden
+
+
+def test_jenkinsfile_force_deploy_is_opt_in():
+    assert "name: 'FORCE_DEPLOY'" in JENKINSFILE
+    assert "defaultValue: false" in JENKINSFILE
+    assert "when { expression { params.FORCE_DEPLOY } }" in JENKINSFILE
+    assert "https://mycelium.musicalmycology.org/_deploy-trigger/gb-website" in JENKINSFILE
