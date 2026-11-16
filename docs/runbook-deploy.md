@@ -26,9 +26,8 @@ Register `gb-website` in FusionAuth (`auth.musicalmycology.org`,
 
 Capture **Client ID** and **Client Secret** and stash them in Jenkins as
 the `gb-website-oidc-client-id` and `gb-website-oidc-client-secret`
-credentials (provisioned in `mm-jenkins/jenkins.yaml`). The deploy job
-renders them into `secrets.env` on every build — never hand-edit the
-file on mycelium.
+credentials (provisioned in `mm-jenkins/jenkins.yaml`), and put the same
+values in `secrets.env` on mycelium (see "Rotate a secret").
 
 ### 2. mm-homebody allowed_zones
 
@@ -81,29 +80,33 @@ mkdir -p "$HOME/gb-website-backups"
 primary group; default is `staff`. `id -gn` resolves the right group
 on whichever OS this is run on.)
 
-That's it for on-host setup. The repo itself is checked out into the
-Jenkins workspace each build — there is no permanent `/opt/gb-website/repo`
-clone to keep in sync. `secrets.env` is rendered into that workspace
-from Jenkins credentials by `Jenkinsfile.deploy` on every deploy (see
-the mm-sporekles `api/.env` pattern this mirrors), so do not create one
-by hand.
+The repo is checked out at `/Users/chris/Projects/gb-website` on mycelium.
+The pull script runs `docker compose` from there, and the container reads
+`secrets.env` from that directory. On mycelium that path is a symlink to
+`/opt/gb-website/secrets.env`, so the real file sits outside the git checkout
+next to `backup.env`. Jenkins runs on EC2 and cannot write to mycelium, so the
+file is created and maintained by hand:
 
-Provision these credentials in `mm-jenkins/jenkins.yaml` before the
-first deploy fires:
+```
+SECRET_KEY=...
+OIDC_CLIENT_ID=...
+OIDC_CLIENT_SECRET=...
+OIDC_DISCOVERY_URL=https://auth.musicalmycology.org/.well-known/openid-configuration
+OIDC_GROUP_REQUIRED=gb-developer
+CDN_BASE_URL=https://design-assets.grogblossoms.com/
+SPOREKLES_API_BASE=http://mm-sporekles-api:3000
+SPOREKLES_TENANT=gb
+SMTP_FROM=no-reply@grogblossoms.com
+CONTACT_EMAIL=...
+```
 
-| Credential ID | Kind | Maps to |
-|---|---|---|
-| `gb-website-secret-key` | string | `SECRET_KEY` |
-| `gb-website-oidc-client-id` | string | `OIDC_CLIENT_ID` |
-| `gb-website-oidc-client-secret` | string | `OIDC_CLIENT_SECRET` |
-| `gb-website-smtp` | usernamePassword | `SMTP_USER` / `SMTP_PASSWORD` |
-
-Non-secret config (OIDC discovery URL, sporekles API base, CDN base
-URL, SMTP host/port/from, contact email, tenant) is inlined in the
-Jenkinsfile heredoc — no Jenkins credential needed.
+`chmod 600 secrets.env`. The three secrets are also stored as Jenkins
+credentials (`gb-website-secret-key`, `gb-website-oidc-client-id`,
+`gb-website-oidc-client-secret` in `mm-jenkins/jenkins.yaml`); keep the two
+in step.
 
 `backup.env` stays out-of-band — restic/B2 keys are restore-time
-credentials and don't belong in the per-deploy render path. Bootstrap
+credentials, kept separate from the application's env file. Bootstrap
 once:
 
 ```bash
@@ -117,11 +120,23 @@ EOF
 chmod 600 /opt/gb-website/backup.env
 ```
 
-Then trigger the first Jenkins build of `gb-website-deploy`. It will
-push the image, render `secrets.env` into the workspace, and
-`docker compose up -d` directly on the controller (mm-jenkins is itself
-on mycelium — no ssh hop). Tail `docker compose logs -f --tail 100` from
-the workspace dir to watch the first start.
+Then install the pull script and its 5-minute launchd timer (needs the
+`gb-website` ECR repository and `flock`; both come from the mm-jenkins
+setup):
+
+```bash
+bash ~/projects/mm-jenkins/bin/mycelium-install-service.sh \
+  --service gb-website \
+  --ecr-repo 365647376064.dkr.ecr.us-east-1.amazonaws.com/gb-website \
+  --compose-dir /Users/chris/Projects/gb-website \
+  --container-name gb-website-app \
+  --local-image gb-website:latest \
+  --no-kuma-monitoring
+```
+
+The first Jenkins build of `gb-website-deploy` publishes the image; the
+timer deploys it within 5 minutes. Watch
+`~/Library/Logs/gb-website-deploy.log`.
 
 There is **no** `cloudflared` container in this stack. mm-homebody owns
 the single mycelium cloudflared instance and the only Cloudflare API
@@ -138,7 +153,55 @@ token. gb-website declares its hostname via `homebody.*` Docker labels
 
 ## Deploy a change
 
-`git push` to `main` → Jenkins `gb-website-deploy` job triggers → `withCredentials` renders `secrets.env` in the workspace → `docker compose build` builds the image locally → `docker compose up -d` runs on the controller (mm-jenkins is on mycelium, same host as the container — no registry round-trip, matches the mm-sporekles pattern) → curl healthcheck against `https://www.grogblossoms.com/healthz`. mm-homebody picks up label changes on container restart with no manual reconcile.
+Merge to `main`. Jenkins (`gb-website-deploy`, polls every 5 minutes) runs
+lint and tests, builds the image and pushes it to ECR. The launchd timer on
+mycelium pulls it within 5 minutes and recreates `gb-website-app`.
+
+- **Deploy immediately:** run the job with `FORCE_DEPLOY` ticked.
+- **Did it deploy?** A green build only means the image was published.
+  Check `~/Library/Logs/gb-website-deploy.log` on mycelium (`deployed`,
+  `no-op`, or `FAILED`), or `docker ps` for the container's age.
+- **Compose file changes** (labels, healthcheck, environment) are not picked
+  up by the pull script. After merging one, run on mycelium:
+  `cd /Users/chris/Projects/gb-website && git pull --ff-only && docker compose up -d --wait`
+
+mm-homebody picks up label changes on container restart with no manual
+reconcile.
+
+## Roll back
+
+On mycelium:
+
+```bash
+docker tag 365647376064.dkr.ecr.us-east-1.amazonaws.com/gb-website:rollback-prev gb-website:latest
+cd /Users/chris/Projects/gb-website && docker compose up -d --force-recreate
+```
+
+The next timer tick re-pulls `:latest` from ECR and would undo this, so also
+revert the bad commit on `main` and let Jenkins publish the fix. For a bad
+migration, restore the database (below).
+
+## Rotate a secret
+
+1. Update the Jenkins credential (mm-jenkins, JCasC seed).
+2. On mycelium, edit `/opt/gb-website/secrets.env` (the checkout's `secrets.env` is a symlink to it).
+3. `docker compose up -d --force-recreate` in that directory.
+
+## Manual deploy (fallback)
+
+Works at any time, independent of Jenkins and ECR:
+
+```bash
+cd /Users/chris/Projects/gb-website && git pull --ff-only
+docker compose up -d --build --wait
+```
+
+The compose file pins the project name, so no `-p` flag is needed.
+
+Once the pull timer is installed this is a temporary override: the next
+tick sees the container is not on the ECR `:latest` image and replaces the
+local build with it. To keep a manual build in place, unload the launchd
+agent first.
 
 ## Restore from backup
 

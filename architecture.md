@@ -7,18 +7,20 @@ covers *how* you operate the system, this covers *what* the system is.
 
 - **gb-website-app, gb_data volume, shared-tunnel network, cloudflared,
   mm-homebody, mm-sporekles-api:** mycelium (macOS, Docker Desktop).
-- **mm-jenkins:** AWS as of 2026-05 (was on mycelium). See [Open questions](#open-questions-jenkins-in-aws-migration)
-  — the runbook hasn't been updated yet and still assumes Jenkins-on-mycelium.
+- **mm-jenkins:** AWS EC2 (`jenkins.musicalmycology.org`). It builds and
+  publishes the image; it does not run the site. See
+  [How deploys work](#how-deploys-work).
+- **Container image:** ECR repository `gb-website` in the Musical Mycology
+  AWS account (`365647376064.dkr.ecr.us-east-1.amazonaws.com/gb-website`).
 - **DNS zone `grogblossoms.com`, apex → `www` redirect:** Cloudflare. The
   domain is registered at Amazon Registrar but delegated to Cloudflare
   nameservers. See [DNS lives in Cloudflare](#dns-lives-in-cloudflare).
 - **Restic backups:** Backblaze B2, config at `/opt/gb-website/backup.env`
   on mycelium.
 - **Application secrets** (`SECRET_KEY`, OIDC client id/secret, future SMTP
-  credentials): Jenkins JCasC string credentials, rendered into `secrets.env`
-  per build by [Jenkinsfile.deploy](Jenkinsfile.deploy). Jenkins itself is
-  in AWS as of 2026-05, but the JCasC pattern is unchanged — the secret
-  material remains protected by the AWS pipeline. See [Secrets](#secrets).
+  credentials): stored as Jenkins JCasC string credentials; the copy the
+  container reads is `secrets.env` in the mycelium checkout. See
+  [Secrets](#secrets).
 
 ## Public request path
 
@@ -116,64 +118,65 @@ manual DNS".
 
 ## Secrets
 
-Application secrets are provisioned as Jenkins JCasC string credentials.
-The deploy stage of [Jenkinsfile.deploy](Jenkinsfile.deploy) reads them via
-`withCredentials` and renders them into `secrets.env` in the workspace
-per-build (atomic write + chmod 600). mycelium holds no authoritative copy
-of its own — `secrets.env` is replaced on every deploy.
-
-Jenkins itself moved to AWS in 2026-05; the JCasC pattern continues
-unchanged. Secret material remains protected by the AWS pipeline.
-**Do not migrate this to a different secret store.**
-
-Credentials referenced by [Jenkinsfile.deploy:68-72](Jenkinsfile.deploy:68):
+Application secrets are stored as Jenkins JCasC string credentials (decided
+2026-11-16: no change of secret store).
 
 | Credential ID | Maps to |
 |---|---|
 | `gb-website-secret-key` | `SECRET_KEY` |
 | `gb-website-oidc-client-id` | `OIDC_CLIENT_ID` |
 | `gb-website-oidc-client-secret` | `OIDC_CLIENT_SECRET` |
-| `gb-website-smtp` (deferred — Fastmail not yet provisioned) | `SMTP_USER`, `SMTP_PASSWORD` |
+| `gb-website-smtp` (deferred — no mail service provisioned) | `SMTP_USER`, `SMTP_PASSWORD` |
 
-Non-secret config (OIDC discovery URL, sporekles base, CDN base, SMTP from,
-contact email, tenant) is inlined in the Jenkinsfile heredoc — not a
-Jenkins credential.
+The pipeline no longer delivers them. Jenkins on EC2 cannot write to
+mycelium, so [Jenkinsfile.deploy](Jenkinsfile.deploy) does not read or render
+secrets, and the mycelium pull script is installed without env rendering. The
+container reads `secrets.env` in `/Users/chris/Projects/gb-website` on
+mycelium, which is a symlink to `/opt/gb-website/secrets.env`. That file was
+copied by hand from the archived Jenkins workspace on
+2026-05-25 and is now the working copy; it also carries the non-secret config
+that used to be inlined in the Jenkinsfile (OIDC discovery URL, sporekles
+base, CDN base, SMTP from, contact email, tenant).
 
-**Recovery note (2026-05-25):** the `secrets.env` currently on mycelium was
-manually copied from the archived Jenkins workspace at
-`/Users/chris/Projects/mm-jenkins/data.archived-20260523/workspace/gb-website-deploy/secrets.env`
-after the outage. This is a stop-gap — the next successful AWS-Jenkins
-build will overwrite it with a fresh JCasC render.
+Rotating a secret is two manual steps: update the Jenkins credential, then
+edit `/opt/gb-website/secrets.env` on mycelium and recreate the container. See
+[docs/runbook-deploy.md](docs/runbook-deploy.md).
 
-## Open questions (Jenkins-in-AWS migration)
+## How deploys work
 
-Following the move of mm-jenkins to AWS in 2026-05, the following are not
-yet captured:
+```
+merge to main
+   │  (Jenkins pollSCM, every 5 min)
+   ▼
+Jenkins on EC2: lint + test → docker build → push gb-website:<sha> and :latest to ECR
+   │                                             │
+   │ (only if FORCE_DEPLOY=true)                 │ (always, within 5 min)
+   ▼                                             ▼
+POST /_deploy-trigger/gb-website  ─►  mycelium: /opt/gb-website/deploy-pull.sh
+                                         pull :latest, retag as gb-website:latest,
+                                         tag the old image :rollback-prev,
+                                         docker compose up -d --force-recreate
+```
 
-- Which AWS service runs Jenkins (EC2 / ECS Fargate / self-hosted /
-  AWS-managed)?
-- Jenkins UI URL.
-- How does AWS Jenkins deploy to mycelium?
-  - SSH from the Jenkins agent back to mycelium and run `docker compose up`?
-  - Push the image to ECR, mycelium pulls and restarts?
-  - Webhook to `mm-deploy-broker` on mycelium (the dir exists at
-    `/opt/mm-deploy-broker/` — is this the receiver)?
-- The places in the Jenkins setup that need updating for a successful
-  build run — see [Why the Jenkins job fails](#why-the-jenkins-job-fails)
-  (researched 2026-11-16 from the build logs; no earlier written list was
-  found in this repo, mm-jenkins, or mm-documents).
-- [Jenkinsfile.deploy](Jenkinsfile.deploy) (lines 1–9, 53, 95) and
-  [docs/runbook-deploy.md](docs/runbook-deploy.md) still assume Jenkins
-  runs on mycelium with no SSH hop and no registry round-trip. JCasC-based
-  secret rendering is still correct; the host claims aren't. Both files
-  need an update pass once the AWS deploy mechanism is nailed down.
+- A green Jenkins build means the image was published, not that the site
+  was updated. The deploy result is in `~/Library/Logs/gb-website-deploy.log`
+  on mycelium. There is no uptime monitor on the deploy yet.
+- The pull script pulls images, not git. A change to
+  [docker-compose.yml](docker-compose.yml) only takes effect after a
+  `git pull` in the mycelium checkout.
+- Database migrations run in the container entrypoint (`flask db upgrade`).
+- The mycelium side is installed by
+  `mm-jenkins/bin/mycelium-install-service.sh`; the ECR repository,
+  deploy-trigger allowlist entry and job definition live in mm-jenkins.
+- Design: [docs/specs/2026-11-16-jenkins-deploy-migration-design.md](docs/specs/2026-11-16-jenkins-deploy-migration-design.md).
 
-## Why the Jenkins job fails
+## Jenkins build history (before the ECR migration)
 
-`gb-website-deploy` has succeeded once (build 10, 2026-05-22) and has failed
-on every run since Jenkins moved to EC2. Lint, tests and the image build
-pass; the job dies at `docker compose up` because it tries to start the
-container on the Jenkins host.
+Under the original Jenkinsfile, `gb-website-deploy` succeeded once (build 10,
+2026-05-22) and failed on every run after Jenkins moved to EC2: lint, tests
+and the image build passed, then `docker compose up` ran on the Jenkins host,
+where mycelium's network and volume do not exist. The job also had no
+trigger. Kept for reference.
 
 Build history, from `/opt/mm-jenkins/data/jobs/gb-website-deploy/builds/`:
 
@@ -193,30 +196,10 @@ Build history, from `/opt/mm-jenkins/data/jobs/gb-website-deploy/builds/`:
 | 14 | 2026-11-13 | Failed | Same `shared-tunnel` error |
 | 15 | 2026-11-16 | Failed | Same `shared-tunnel` error |
 
-What has to change before a build can deploy again:
-
-1. **[Jenkinsfile.deploy](Jenkinsfile.deploy)** — the Deploy stage runs
-   `docker compose up` on the Jenkins host (EC2). `shared-tunnel`, the
-   `gb_data` volume and cloudflared all live on mycelium. The stage also
-   writes the rendered `secrets.env` into the EC2 workspace before failing.
-   The Smoke stage would then pass against the *old* container, since it
-   only curls the public URL.
-2. **The job definition** (`mm-jenkins/jobs/gb-website-deploy/config.xml`) —
-   `<triggers/>` is empty and the Jenkinsfile declares no `pollSCM`, so a
-   merge to `main` never starts a build even though the job description
-   says it polls every 5 minutes. Every build so far was started by hand.
-3. **mycelium** — nothing there pulls a new image. The other mycelium
-   services use an ECR repository plus a launchd `deploy-pull.sh`
-   installed by `mm-jenkins/bin/mycelium-install-service.sh` (design:
-   `mm-jenkins/docs/superpowers/specs/2026-05-23-post-mycelium-service-deploy-design.md`).
-   gb-website has no ECR repository, no pull script, and no entry in the
-   deploy-trigger allowlist.
-
-Until that migration is done, deploys are manual (see
-[Volume name has a project prefix](#volume-name-has-a-project-prefix)):
+A manual deploy on mycelium still works at any time and is the fallback if
+the pull path is broken:
 
 ```bash
 cd /Users/chris/Projects/gb-website && git pull --ff-only
 docker compose up -d --build --wait
 ```
-
