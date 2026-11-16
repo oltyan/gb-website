@@ -47,7 +47,12 @@ def create_app(config_name: str | None = None) -> Flask:
             client_id=app.config["OIDC_CLIENT_ID"],
             client_secret=app.config["OIDC_CLIENT_SECRET"],
             server_metadata_url=app.config["OIDC_DISCOVERY_URL"],
-            client_kwargs={"scope": "openid email profile groups"},
+            # PKCE: the provider rejects authorization requests that carry
+            # no code_challenge (missing_code_challenge).
+            client_kwargs={
+                "scope": "openid email profile groups",
+                "code_challenge_method": "S256",
+            },
         )
 
     from .blueprints.auth import bp as auth_bp
