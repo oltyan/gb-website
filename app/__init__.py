@@ -50,7 +50,10 @@ def create_app(config_name: str | None = None) -> Flask:
             # PKCE: the provider rejects authorization requests that carry
             # no code_challenge (missing_code_challenge).
             client_kwargs={
-                "scope": "openid email profile groups",
+                # No `groups` scope: the provider has none registered and
+                # rejects the request (unknown_scope). Group names come back
+                # as a token claim regardless of scope.
+                "scope": "openid email profile",
                 "code_challenge_method": "S256",
             },
         )

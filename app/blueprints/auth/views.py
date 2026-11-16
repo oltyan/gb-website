@@ -29,10 +29,24 @@ def login():
 
 @bp.get("/oidc/callback")
 def oidc_callback():
+    if request.args.get("error"):
+        # The provider refused the authorization request and sent the user
+        # back with an error instead of a code. Say so rather than 500.
+        return (
+            render_template(
+                "auth/provider_error.html",
+                error=request.args.get("error"),
+                description=request.args.get("error_description", ""),
+            ),
+            400,
+        )
     token = _fetch_token()
     userinfo = token.get("userinfo") or oauth.fa.userinfo(token=token)
     required_group = current_app.config.get("OIDC_GROUP_REQUIRED", "gb-developer")
-    groups = userinfo.get("groups") or []
+    # `groups` is present when a populate lambda is bound to the application;
+    # otherwise FusionAuth reports the user's roles on this application as
+    # `roles`. Either way the required name must be in the list.
+    groups = userinfo.get("groups") or userinfo.get("roles") or []
 
     if required_group not in groups:
         return render_template("auth/forbidden.html", required=required_group), 403

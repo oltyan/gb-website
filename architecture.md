@@ -157,10 +157,65 @@ yet captured:
   - Push the image to ECR, mycelium pulls and restarts?
   - Webhook to `mm-deploy-broker` on mycelium (the dir exists at
     `/opt/mm-deploy-broker/` — is this the receiver)?
-- The 3 places in the Jenkins setup that need updating for a successful
-  build run — enumerate and document.
+- The places in the Jenkins setup that need updating for a successful
+  build run — see [Why the Jenkins job fails](#why-the-jenkins-job-fails)
+  (researched 2026-11-16 from the build logs; no earlier written list was
+  found in this repo, mm-jenkins, or mm-documents).
 - [Jenkinsfile.deploy](Jenkinsfile.deploy) (lines 1–9, 53, 95) and
   [docs/runbook-deploy.md](docs/runbook-deploy.md) still assume Jenkins
   runs on mycelium with no SSH hop and no registry round-trip. JCasC-based
   secret rendering is still correct; the host claims aren't. Both files
   need an update pass once the AWS deploy mechanism is nailed down.
+
+## Why the Jenkins job fails
+
+`gb-website-deploy` has succeeded once (build 10, 2026-05-22) and has failed
+on every run since Jenkins moved to EC2. Lint, tests and the image build
+pass; the job dies at `docker compose up` because it tries to start the
+container on the Jenkins host.
+
+Build history, from `/opt/mm-jenkins/data/jobs/gb-website-deploy/builds/`:
+
+| Build | Date | Result | Cause |
+|---|---|---|---|
+| 1 | 2026-05-21 | Failed | Clone returned 403 (repo was not yet readable without credentials) |
+| 2 | 2026-05-21 | Failed | Jenkinsfile used `ansiColor`, a plugin option Jenkins doesn't have |
+| 3 | 2026-05-21 | Failed | Missing `ghcr-push` credential (registry push, since removed) |
+| 4 | 2026-05-21 | Failed | `pip install -e` — multiple top-level packages in a flat layout |
+| 5 | 2026-05-21 | Failed | `ruff` found 102 lint errors |
+| 6 | 2026-05-21 | Failed | Docker `mounts denied` on a host bind mount (led to the named volume) |
+| 7 | 2026-05-22 | Failed | Smoke test could not connect to `www` (DNS/tunnel not ready) |
+| 8, 9 | 2026-05-22 | Failed | Smoke test got 502 (curl ran before the container was healthy) |
+| 10 | 2026-05-22 | **Success** | Last run with Jenkins on mycelium |
+| 11, 13 | 2026-06-11 | Failed | `network shared-tunnel declared as external, but could not be found` |
+| 12 | 2026-06-11 | Aborted | Jenkins `failed to run ps` (superseded by 13) |
+| 14 | 2026-11-13 | Failed | Same `shared-tunnel` error |
+| 15 | 2026-11-16 | Failed | Same `shared-tunnel` error |
+
+What has to change before a build can deploy again:
+
+1. **[Jenkinsfile.deploy](Jenkinsfile.deploy)** — the Deploy stage runs
+   `docker compose up` on the Jenkins host (EC2). `shared-tunnel`, the
+   `gb_data` volume and cloudflared all live on mycelium. The stage also
+   writes the rendered `secrets.env` into the EC2 workspace before failing.
+   The Smoke stage would then pass against the *old* container, since it
+   only curls the public URL.
+2. **The job definition** (`mm-jenkins/jobs/gb-website-deploy/config.xml`) —
+   `<triggers/>` is empty and the Jenkinsfile declares no `pollSCM`, so a
+   merge to `main` never starts a build even though the job description
+   says it polls every 5 minutes. Every build so far was started by hand.
+3. **mycelium** — nothing there pulls a new image. The other mycelium
+   services use an ECR repository plus a launchd `deploy-pull.sh`
+   installed by `mm-jenkins/bin/mycelium-install-service.sh` (design:
+   `mm-jenkins/docs/superpowers/specs/2026-05-23-post-mycelium-service-deploy-design.md`).
+   gb-website has no ECR repository, no pull script, and no entry in the
+   deploy-trigger allowlist.
+
+Until that migration is done, deploys are manual (see
+[Volume name has a project prefix](#volume-name-has-a-project-prefix)):
+
+```bash
+cd /Users/chris/Projects/gb-website && git pull --ff-only
+docker compose -p gb-website-deploy up -d --build --wait
+```
+
