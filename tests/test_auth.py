@@ -120,3 +120,40 @@ def test_oidc_client_uses_pkce(app):
     from app.extensions import oauth
 
     assert oauth.fa.client_kwargs.get("code_challenge_method") == "S256"
+
+
+def test_oidc_client_does_not_request_unregistered_groups_scope(app):
+    # The provider has no `groups` scope and rejects the whole request with
+    # invalid_scope / unknown_scope. Group names arrive as a token claim.
+    from app.extensions import oauth
+
+    assert "groups" not in oauth.fa.client_kwargs["scope"].split()
+
+
+def test_oidc_callback_reports_provider_error_instead_of_500(client):
+    with patch("app.blueprints.auth.views._fetch_token") as fetch:
+        response = client.get(
+            "/auth/oidc/callback?error=invalid_scope"
+            "&error_description=Invalid+scope.&state=fake"
+        )
+    assert response.status_code == 400
+    assert b"invalid_scope" in response.data
+    fetch.assert_not_called()
+
+
+def test_oidc_callback_accepts_required_group_from_roles_claim(client, app):
+    # FusionAuth emits a user's roles on this application as `roles`; a
+    # `groups` claim only exists when a populate lambda is bound to the app.
+    fake_token = {
+        "userinfo": {"sub": "fa-user-003", "email": "r@example.test", "roles": ["gb-developer"]}
+    }
+    with patch("app.blueprints.auth.views._fetch_token", return_value=fake_token):
+        response = client.get("/auth/oidc/callback?code=fake&state=fake")
+    assert response.status_code in (302, 303)
+
+
+def test_oidc_callback_rejects_roles_claim_without_required_group(client, app):
+    fake_token = {"userinfo": {"sub": "fa-user-004", "email": "n@example.test", "roles": ["user"]}}
+    with patch("app.blueprints.auth.views._fetch_token", return_value=fake_token):
+        response = client.get("/auth/oidc/callback?code=fake&state=fake")
+    assert response.status_code == 403
