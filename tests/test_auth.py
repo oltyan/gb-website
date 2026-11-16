@@ -112,3 +112,11 @@ def test_login_callback_url_is_https_behind_tls_terminating_proxy(client):
         )
         (redirect_uri,), _ = mock_fa.authorize_redirect.call_args
     assert redirect_uri == "https://www.grogblossoms.com/auth/oidc/callback"
+
+
+def test_oidc_client_uses_pkce(app):
+    # The identity provider rejects authorization requests without a PKCE
+    # code_challenge (error=invalid_request, missing_code_challenge).
+    from app.extensions import oauth
+
+    assert oauth.fa.client_kwargs.get("code_challenge_method") == "S256"
