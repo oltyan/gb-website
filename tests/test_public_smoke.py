@@ -15,7 +15,6 @@ def _seed_home(app):
         s = SiteSettings.get_or_create()
         s.hero_quote = "A celtic-pirate fusion band."
         s.hero_image_url = "https://example/x.jpg"
-        s.ports_visited = 12
         s.grog_pints = "100+"
         db.session.add(Scuttlebutt(text="Test scuttle", accent="amber", sort_order=0))
         db.session.add(
@@ -38,7 +37,7 @@ def test_home_renders_with_seeded_data(client, app):
     assert "celtic-pirate fusion" in body
     assert "Test scuttle" in body
     assert "Raid at Port Royal" in body
-    assert "12" in body  # ports_visited
+    assert "100+" in body  # grog_pints
 
 
 def test_log_index_and_detail(client, app):
