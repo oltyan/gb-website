@@ -24,6 +24,15 @@ def _live_scuttlebutts():
     return [s for s in Scuttlebutt.query.order_by(Scuttlebutt.sort_order).all() if s.is_visible()]
 
 
+def _past_tour_dates(now: datetime):
+    """Shows that have happened: marked past, or dated before now.
+
+    One definition for the Manifest's "Ports Visited" list and the home
+    page's counter, so the two can't disagree.
+    """
+    return TourDate.query.filter((TourDate.status == "past") | (TourDate.starts_at < now))
+
+
 @bp.get("/")
 def home():
     settings = SiteSettings.get_or_create()
@@ -36,7 +45,11 @@ def home():
         .all()
     )
     return render_template(
-        "public/home.html", settings=settings, scuttlebutts=scuttle, posts=recent
+        "public/home.html",
+        settings=settings,
+        scuttlebutts=scuttle,
+        posts=recent,
+        ports_visited=_past_tour_dates(datetime.utcnow()).count(),
     )
 
 
@@ -68,11 +81,7 @@ def manifest():
         .order_by(TourDate.starts_at)
         .all()
     )
-    past = (
-        TourDate.query.filter((TourDate.status == "past") | (TourDate.starts_at < now))
-        .order_by(TourDate.starts_at.desc())
-        .all()
-    )
+    past = _past_tour_dates(now).order_by(TourDate.starts_at.desc()).all()
     return render_template("public/manifest.html", upcoming=upcoming, past=past)
 
 

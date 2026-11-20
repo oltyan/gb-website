@@ -233,6 +233,7 @@ class SiteSettings(db.Model):
     footer_text: Mapped[str] = mapped_column(
         Text, default="© 2026 THE GROG BLOSSOMS. NO QUARTER GIVEN."
     )
+    # Legacy, unused: the home page counts past TourDate rows instead.
     ports_visited: Mapped[int] = mapped_column(Integer, default=0)
     grog_pints: Mapped[str] = mapped_column(String(32), default="0")
 

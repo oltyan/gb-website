@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, url_for
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, StringField, TextAreaField
+from wtforms import StringField, TextAreaField
 from wtforms.validators import URL, Optional
 
 from app.extensions import db
@@ -19,7 +19,7 @@ class SiteSettingsForm(FlaskForm):
     logo_url = StringField("Logo URL", validators=[Optional(), URL()])
     contact_email = StringField("Contact email", validators=[Optional()])
     footer_text = StringField("Footer text", validators=[Optional()])
-    ports_visited = IntegerField("Ports visited (stat)", default=0)
+    # "Ports Visited" on the home page is computed from past tour dates.
     grog_pints = StringField("Grog pints (stat, e.g. '100+')", validators=[Optional()])
 
 
